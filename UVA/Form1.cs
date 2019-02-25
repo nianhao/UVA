@@ -157,11 +157,12 @@ namespace UVA
                                 videoReceiveThread = new Thread(new ParameterizedThreadStart(videoReceiveLoop));
                                 videoReceiveThread.IsBackground = true;
                                 videoReceiveThread.Start(videoReceiveUDPClient);
-                                //分配成功，输出信息
-                                textBox_sysLog.Invoke(setSysLogCallBack, (string.Format("为{0}:{1}分配视频接收服务器成功，视频接收地址为{2}:{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, video_receive_ip, RandKey)));
                                 //在全部无人机combbox里面添加一项
                                 UvaEntity tmpUVA = new UvaEntity(RemoteIpEndPoint.Address.ToString(), RemoteIpEndPoint.Port, Convert.ToInt32(commands[2]));
-                                comboBox_allUVA.Invoke(modifyUVACallBack, tmpUVA);
+                                comboBox_allUVA.Invoke(modifyUVACallBack, tmpUVA,true);
+                                //分配成功，输出信息
+                                textBox_sysLog.Invoke(setSysLogCallBack, (string.Format("为{0}:{1}分配视频接收服务器成功，视频接收地址为{2}:{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, video_receive_ip, RandKey)));
+                                
                                 break;
                             }
                             catch(Exception e)
