@@ -61,6 +61,7 @@
     <Compile Include="SysSetting.Designer.cs">
       <DependentUpon>SysSetting.cs</DependentUpon>
     </Compile>
+    <Compile Include="UvaEntity.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
