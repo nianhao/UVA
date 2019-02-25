@@ -16,12 +16,19 @@ namespace UVA
 {
     public partial class Form1 : Form 
     {
+        //视频接收线程
         private Thread videoReceiveThread;
+        //监听的端口和ip，与Gloable相同
         public int port { get; private set; }
         public string ip { get; private set; }
         public IPEndPoint point { get; private set; }
         public UdpClient dispatchUDPClient { get; private set; }
+        //调度线程
         public Thread dispatchThread { get; private set; }
+        //声明跨线程操作的委托
+        //设置日志信息
+        private delegate void setSysLog_CALLBACK(string logInfo);
+        private setSysLog_CALLBACK setSysLogCallBack;
 
         public Form1()
         {
@@ -54,6 +61,8 @@ namespace UVA
             point = new IPEndPoint(IPAddress.Parse(ip), port);
             //实例化调度UDP服务器
             dispatchUDPClient = new UdpClient(point);
+            //实例化日志信息设置回调
+            setSysLogCallBack = new setSysLog_CALLBACK(setSysLog);
             //开启UDP监听
             dispatchThread = new Thread(new ParameterizedThreadStart(dispatchLoop));
             dispatchThread.IsBackground = true;
@@ -82,17 +91,17 @@ namespace UVA
                 //输出debug信息
                 //Trace.WriteLine("接收到消息："+receiveData);
 #if DEBUG 
-                setSysLog("接收到来自"+RemoteIpEndPoint.ToString()+"消息：" + receiveData);
+                textBox_sysLog.Invoke(setSysLogCallBack,("接收到来自"+RemoteIpEndPoint.ToString()+"消息：" + receiveData));
 #endif
                 string[] commands = receiveData.Split(';');
                 switch(commands[1])
                 {
                     case "start":
 #if DEBUG
-                        setSysLog("解析到 start 命令");
+                        textBox_sysLog.Invoke(setSysLogCallBack, ("解析到 start 命令"));
 #endif
                         //接收到连接信息，输出日志信息
-                        setSysLog("接收到来自" + RemoteIpEndPoint + "的连接请求");
+                        textBox_sysLog.Invoke(setSysLogCallBack, ("接收到来自" + RemoteIpEndPoint + "的连接请求"));
                         //为新的UVA分配接收视频信息的udpClient
                         int restTimes = Global.MAX_RETRY_TIMES;
                         while(true)
@@ -100,13 +109,13 @@ namespace UVA
                             if (restTimes>0)
                             {
 #if DEBUG
-                                setSysLog("正在为" + RemoteIpEndPoint.ToString() + "分配视频接收服务器");
-                                setSysLog(string.Format("第{0}/{1}次尝试", Global.MAX_RETRY_TIMES - restTimes + 1, Global.MAX_RETRY_TIMES));
+                                textBox_sysLog.Invoke(setSysLogCallBack, ("正在为" + RemoteIpEndPoint.ToString() + "分配视频接收服务器"));
+                                textBox_sysLog.Invoke(setSysLogCallBack, (string.Format("第{0}/{1}次尝试", Global.MAX_RETRY_TIMES - restTimes + 1, Global.MAX_RETRY_TIMES)));
 #endif
                             }
                             else
                             {
-                                setSysLog(string.Format("为{0}分配视频接收服务器失败，系统资源不足", RemoteIpEndPoint.ToString()));
+                                textBox_sysLog.Invoke(setSysLogCallBack, (string.Format("为{0}分配视频接收服务器失败，系统资源不足", RemoteIpEndPoint.ToString())));
                                 break;
                             }
                             //获取视频接收服务器的ip地址
@@ -123,7 +132,7 @@ namespace UVA
                                 videoReceiveThread.IsBackground = true;
                                 videoReceiveThread.Start(videoReceiveUDPClient);
                                 //分配成功，输出信息
-                                setSysLog(string.Format("为{0}分配视频接收服务器成功，{1}", RemoteIpEndPoint.ToString(), videoReceiveUDPClient.ToString()));
+                                textBox_sysLog.Invoke(setSysLogCallBack, (string.Format("为{0}分配视频接收服务器成功，{1}", RemoteIpEndPoint.ToString(), videoReceiveUDPClient.ToString())));
                             }
                             catch(Exception e)
                             {
@@ -155,7 +164,7 @@ namespace UVA
                 //输出debug信息
                 //Trace.WriteLine("接收到消息："+receiveData);
 #if DEBUG 
-                setSysLog("接收到来自" + RemoteIpEndPoint.ToString() + "消息：" + receiveData);
+                textBox_sysLog.Invoke(setSysLogCallBack, ("接收到来自" + RemoteIpEndPoint.ToString() + "消息：" + receiveData));
 #endif
             }
         }
