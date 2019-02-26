@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -32,6 +33,8 @@ namespace UVA
         //增加无人机上线信息
         private delegate void modifyUVA_CALLBACK(UvaEntity newUVA,bool add);
         private modifyUVA_CALLBACK modifyUVACallBack;
+        //存储在线的全部无人机,考虑到线程安全和效率问题，使用hashTable
+        public Hashtable allUVA = Hashtable.Synchronized(new Hashtable());
 
         public Form1()
         {
@@ -65,6 +68,9 @@ namespace UVA
             {
                 string uvaName = newUVA.uvaName;
                 this.comboBox_allUVA.Items.Add(uvaName);
+                this.comboBox_allUVA.SelectedIndex = this.comboBox_allUVA.FindString(uvaName);
+                int uvaNum = allUVA.Count;
+                this.label_uvaNum.Text = Convert.ToString(uvaNum);
             }
         }
         /// <summary>
@@ -104,11 +110,25 @@ namespace UVA
             
             while (true)
             {
+                //阻塞，只到接收到消息
+                Byte[] receiveBytes = null;// dispatch.Receive(ref RemoteIpEndPoint);
+                string receiveData = null;// Encoding.UTF8.GetString(receiveBytes);
+
                 //允许接收任意远端发送的消息
                 IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
-                //阻塞，只到接收到消息
-                Byte[] receiveBytes = dispatch.Receive(ref RemoteIpEndPoint);
-                string receiveData = Encoding.ASCII.GetString(receiveBytes);
+                try
+                {
+                    //阻塞，只到接收到消息
+                    receiveBytes = dispatch.Receive(ref RemoteIpEndPoint);
+                    receiveData = Encoding.UTF8.GetString(receiveBytes);
+                }
+                catch (Exception e)
+                {
+
+                    Trace.WriteLine(e.ToString());
+                    continue;
+                }
+
                 //输出debug信息
                 //Trace.WriteLine("接收到消息："+receiveData);
 #if DEBUG 
@@ -120,8 +140,33 @@ namespace UVA
                     case "start":
 #if DEBUG
                         textBox_sysLog.Invoke(setSysLogCallBack, ("解析到 start 命令"));
-                        int uvaId = Convert.ToInt32(commands[2]);
+
 #endif
+                        //获取无人机id
+                        int uvaId = Convert.ToInt32(commands[2]);
+                        //检查是否重复连接
+                        if(allUVA.ContainsKey(uvaId))
+                        {
+                            string sendString = "error;DuplicateConnection;";
+                            Byte[] sendBytes = Encoding.UTF8.GetBytes(sendString);
+                            try
+                            {
+                                dispatch.Send(sendBytes, sendBytes.Length, RemoteIpEndPoint);
+                                textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId,sendString));
+
+                            }
+                            catch (Exception e)
+                            {
+#if DEBUG
+                                textBox_sysLog.Invoke(setSysLogCallBack, e.ToString());
+#endif
+
+
+                                textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息失败", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId));
+                            }
+                            break;
+                            
+                        }
                         //接收到连接信息，输出日志信息
                         textBox_sysLog.Invoke(setSysLogCallBack, ("接收到来自" + RemoteIpEndPoint + "的连接请求"));
                         //为新的UVA分配接收视频信息的udpClient
@@ -153,16 +198,19 @@ namespace UVA
                             {
                                 //分配端口成功，开启新的线程，接收视频信息
                                 UdpClient videoReceiveUDPClient = new UdpClient(new IPEndPoint(IPAddress.Parse(video_receive_ip),RandKey));
+                                //记录无人机
+                                UvaEntity tmpUVA = new UvaEntity(RemoteIpEndPoint.Address.ToString(), RemoteIpEndPoint.Port, Convert.ToInt32(commands[2]),videoReceiveUDPClient);
+                                allUVA.Add(uvaId, tmpUVA);
                                 //开启UDP视频接收线程
                                 videoReceiveThread = new Thread(new ParameterizedThreadStart(videoReceiveLoop));
                                 videoReceiveThread.IsBackground = true;
                                 videoReceiveThread.Start(videoReceiveUDPClient);
-                                //在全部无人机combbox里面添加一项
-                                UvaEntity tmpUVA = new UvaEntity(RemoteIpEndPoint.Address.ToString(), RemoteIpEndPoint.Port, Convert.ToInt32(commands[2]));
-                                comboBox_allUVA.Invoke(modifyUVACallBack, tmpUVA,true);
+                                //暂停0.5秒，等待allUVA更新
+                                //System.Threading.Thread.Sleep(500);
                                 //分配成功，输出信息
                                 textBox_sysLog.Invoke(setSysLogCallBack, (string.Format("为{0}:{1}分配视频接收服务器成功，视频接收地址为{2}:{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, video_receive_ip, RandKey)));
-                                
+                                //在全部无人机combbox里面添加一项
+                                comboBox_allUVA.Invoke(modifyUVACallBack, tmpUVA, true);
                                 break;
                             }
                             catch(Exception e)
@@ -184,14 +232,14 @@ namespace UVA
         private void videoReceiveLoop(object obj)
         {
             //throw new NotImplementedException();
-            UdpClient videoReceiveUDPClient = obj as UdpClient;
+            UvaEntity uvaClient = obj as UvaEntity;
             while (true)
             {
                 //允许接收任意远端发送的消息
                 IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
                 //阻塞，只到接收到消息
-                Byte[] receiveBytes = videoReceiveUDPClient.Receive(ref RemoteIpEndPoint);
-                string receiveData = Encoding.ASCII.GetString(receiveBytes);
+                Byte[] receiveBytes = uvaClient.videoReceiveClient.Receive(ref RemoteIpEndPoint);
+                string receiveData = Encoding.UTF8.GetString(receiveBytes);
                 //输出debug信息
                 //Trace.WriteLine("接收到消息："+receiveData);
 #if DEBUG 

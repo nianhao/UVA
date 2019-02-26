@@ -20,7 +20,7 @@ namespace UVA
         public static int MAX_RETRY_TIMES = 100;
         public static String SystemInfo = "无人机通信系统V1.0\r\n默认监听地址" + CONNECTION_IP + ":" + CONNECTION_PORT;
 
-        //为无人机视频传输进行命名的
+       
 
     }
 }

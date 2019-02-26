@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,13 +25,17 @@ namespace UVA
         public ArrayList messages { get; private set; }
         //无人机上次发送心跳的时间
         public string lastHeartBeatTime { get; private set; }
+        //用于接收视频的socket
+        public UdpClient videoReceiveClient { get; private set; }
 
         //构造函数
-        public UvaEntity(string ip,int port,int id)
+        public UvaEntity(string ip,int port,int id,UdpClient videoReceiveClient)
         {
             this.ip = ip;
             this.port = port;
             this.id = id;
+            this.videoReceiveClient = videoReceiveClient;
+            this.loginTime = DateTime.Now.ToLocalTime().ToString();
             this.uvaName = string.Format("{0}号无人机", id);
         }
         

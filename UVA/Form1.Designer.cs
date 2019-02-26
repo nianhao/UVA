@@ -36,6 +36,8 @@
             this.帮助ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBox_allUVA = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.label_uvaNum = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -91,9 +93,9 @@
             // comboBox_allUVA
             // 
             this.comboBox_allUVA.FormattingEnabled = true;
-            this.comboBox_allUVA.Location = new System.Drawing.Point(617, 37);
+            this.comboBox_allUVA.Location = new System.Drawing.Point(493, 77);
             this.comboBox_allUVA.Name = "comboBox_allUVA";
-            this.comboBox_allUVA.Size = new System.Drawing.Size(150, 20);
+            this.comboBox_allUVA.Size = new System.Drawing.Size(160, 20);
             this.comboBox_allUVA.TabIndex = 2;
             // 
             // label1
@@ -105,11 +107,31 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "全部在线的无人机";
             // 
+            // label_uvaNum
+            // 
+            this.label_uvaNum.AutoSize = true;
+            this.label_uvaNum.Location = new System.Drawing.Point(608, 45);
+            this.label_uvaNum.Name = "label_uvaNum";
+            this.label_uvaNum.Size = new System.Drawing.Size(11, 12);
+            this.label_uvaNum.TabIndex = 4;
+            this.label_uvaNum.Text = "0";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(636, 44);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(17, 12);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "台";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(780, 429);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label_uvaNum);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox_allUVA);
             this.Controls.Add(this.textBox_sysLog);
@@ -134,6 +156,8 @@
         private System.Windows.Forms.ToolStripMenuItem 系统设置ToolStripMenuItem;
         private System.Windows.Forms.ComboBox comboBox_allUVA;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label_uvaNum;
+        private System.Windows.Forms.Label label3;
     }
 }
 
