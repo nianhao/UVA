@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.textBox_sysLog = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -38,7 +39,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label_uvaNum = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.serviceController1 = new System.ServiceProcess.ServiceController();
+            this.axVLCPlugin21 = new AxAXVLC.AxVLCPlugin2();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.axVLCPlugin21)).BeginInit();
             this.SuspendLayout();
             // 
             // textBox_sysLog
@@ -125,11 +129,21 @@
             this.label3.TabIndex = 5;
             this.label3.Text = "台";
             // 
+            // axVLCPlugin21
+            // 
+            this.axVLCPlugin21.Enabled = true;
+            this.axVLCPlugin21.Location = new System.Drawing.Point(40, 63);
+            this.axVLCPlugin21.Name = "axVLCPlugin21";
+            this.axVLCPlugin21.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axVLCPlugin21.OcxState")));
+            this.axVLCPlugin21.Size = new System.Drawing.Size(367, 288);
+            this.axVLCPlugin21.TabIndex = 6;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(780, 429);
+            this.Controls.Add(this.axVLCPlugin21);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label_uvaNum);
             this.Controls.Add(this.label1);
@@ -141,6 +155,7 @@
             this.Text = "无人机通信系统";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.axVLCPlugin21)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -158,6 +173,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label_uvaNum;
         private System.Windows.Forms.Label label3;
+        private System.ServiceProcess.ServiceController serviceController1;
+        private AxAXVLC.AxVLCPlugin2 axVLCPlugin21;
     }
 }
 

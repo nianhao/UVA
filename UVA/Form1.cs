@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AxWMPLib;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -46,6 +47,18 @@ namespace UVA
         {
             //初始化系统
             setSysLog(Global.SystemInfo);
+            
+            try
+            {
+                axVLCPlugin21.playlist.add("file:///test.h264");
+                axVLCPlugin21.playlist.play();
+
+            }
+            catch (Exception e)
+            {
+
+                Trace.WriteLine(e.ToString());
+            }
 
         }
         /// <summary>
@@ -231,6 +244,7 @@ namespace UVA
         /// <param name="obj">UDPclient 用于接收无人机传输视频</param>
         private void videoReceiveLoop(object obj)
         {
+            AxWindowsMediaPlayer axWindowsMediaPlayer2 = null;
             //throw new NotImplementedException();
             UvaEntity uvaClient = obj as UvaEntity;
             while (true)
