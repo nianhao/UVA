@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.textBox_sysLog = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,19 +39,32 @@
             this.label_uvaNum = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.serviceController1 = new System.ServiceProcess.ServiceController();
-            this.axVLCPlugin21 = new AxAXVLC.AxVLCPlugin2();
+            this.panel_VLCPlayer = new System.Windows.Forms.Panel();
+            this.button_Back = new System.Windows.Forms.Button();
+            this.button_Play = new System.Windows.Forms.Button();
+            this.button_Go = new System.Windows.Forms.Button();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.trackBar2 = new System.Windows.Forms.TrackBar();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.button_Send = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.axVLCPlugin21)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // textBox_sysLog
             // 
-            this.textBox_sysLog.Location = new System.Drawing.Point(561, 152);
+            this.textBox_sysLog.Location = new System.Drawing.Point(493, 461);
             this.textBox_sysLog.Multiline = true;
             this.textBox_sysLog.Name = "textBox_sysLog";
             this.textBox_sysLog.ReadOnly = true;
             this.textBox_sysLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_sysLog.Size = new System.Drawing.Size(206, 260);
+            this.textBox_sysLog.Size = new System.Drawing.Size(355, 169);
             this.textBox_sysLog.TabIndex = 0;
             // 
             // menuStrip1
@@ -63,7 +75,7 @@
             this.帮助ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(780, 25);
+            this.menuStrip1.Size = new System.Drawing.Size(893, 25);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -129,21 +141,126 @@
             this.label3.TabIndex = 5;
             this.label3.Text = "台";
             // 
-            // axVLCPlugin21
+            // panel_VLCPlayer
             // 
-            this.axVLCPlugin21.Enabled = true;
-            this.axVLCPlugin21.Location = new System.Drawing.Point(40, 63);
-            this.axVLCPlugin21.Name = "axVLCPlugin21";
-            this.axVLCPlugin21.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axVLCPlugin21.OcxState")));
-            this.axVLCPlugin21.Size = new System.Drawing.Size(367, 288);
-            this.axVLCPlugin21.TabIndex = 6;
+            this.panel_VLCPlayer.BackColor = System.Drawing.SystemColors.InfoText;
+            this.panel_VLCPlayer.Location = new System.Drawing.Point(26, 44);
+            this.panel_VLCPlayer.Name = "panel_VLCPlayer";
+            this.panel_VLCPlayer.Size = new System.Drawing.Size(408, 269);
+            this.panel_VLCPlayer.TabIndex = 6;
+            // 
+            // button_Back
+            // 
+            this.button_Back.Location = new System.Drawing.Point(26, 336);
+            this.button_Back.Name = "button_Back";
+            this.button_Back.Size = new System.Drawing.Size(53, 41);
+            this.button_Back.TabIndex = 7;
+            this.button_Back.Text = "<<<";
+            this.button_Back.UseVisualStyleBackColor = true;
+            // 
+            // button_Play
+            // 
+            this.button_Play.Location = new System.Drawing.Point(110, 336);
+            this.button_Play.Name = "button_Play";
+            this.button_Play.Size = new System.Drawing.Size(53, 41);
+            this.button_Play.TabIndex = 8;
+            this.button_Play.Text = "Play";
+            this.button_Play.UseVisualStyleBackColor = true;
+            // 
+            // button_Go
+            // 
+            this.button_Go.Location = new System.Drawing.Point(194, 336);
+            this.button_Go.Name = "button_Go";
+            this.button_Go.Size = new System.Drawing.Size(53, 41);
+            this.button_Go.TabIndex = 9;
+            this.button_Go.Text = ">>>";
+            this.button_Go.UseVisualStyleBackColor = true;
+            // 
+            // trackBar1
+            // 
+            this.trackBar1.Location = new System.Drawing.Point(323, 336);
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Size = new System.Drawing.Size(104, 45);
+            this.trackBar1.TabIndex = 12;
+            // 
+            // trackBar2
+            // 
+            this.trackBar2.Location = new System.Drawing.Point(40, 473);
+            this.trackBar2.Name = "trackBar2";
+            this.trackBar2.Size = new System.Drawing.Size(233, 45);
+            this.trackBar2.TabIndex = 13;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("宋体", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label2.Location = new System.Drawing.Point(45, 437);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(85, 19);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "带宽控制";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("宋体", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label4.Location = new System.Drawing.Point(190, 437);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(69, 19);
+            this.label4.TabIndex = 15;
+            this.label4.Text = "M/100M";
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Font = new System.Drawing.Font("宋体", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.numericUpDown1.ForeColor = System.Drawing.Color.Red;
+            this.numericUpDown1.Location = new System.Drawing.Point(136, 435);
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(47, 29);
+            this.numericUpDown1.TabIndex = 16;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(493, 120);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(355, 193);
+            this.textBox1.TabIndex = 17;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(493, 347);
+            this.textBox2.Multiline = true;
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(187, 85);
+            this.textBox2.TabIndex = 18;
+            // 
+            // button_Send
+            // 
+            this.button_Send.Location = new System.Drawing.Point(702, 387);
+            this.button_Send.Name = "button_Send";
+            this.button_Send.Size = new System.Drawing.Size(72, 45);
+            this.button_Send.TabIndex = 19;
+            this.button_Send.Text = "发送";
+            this.button_Send.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(780, 429);
-            this.Controls.Add(this.axVLCPlugin21);
+            this.ClientSize = new System.Drawing.Size(893, 662);
+            this.Controls.Add(this.button_Send);
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.trackBar2);
+            this.Controls.Add(this.trackBar1);
+            this.Controls.Add(this.button_Go);
+            this.Controls.Add(this.button_Play);
+            this.Controls.Add(this.button_Back);
+            this.Controls.Add(this.panel_VLCPlayer);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label_uvaNum);
             this.Controls.Add(this.label1);
@@ -155,7 +272,9 @@
             this.Text = "无人机通信系统";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.axVLCPlugin21)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -174,7 +293,18 @@
         private System.Windows.Forms.Label label_uvaNum;
         private System.Windows.Forms.Label label3;
         private System.ServiceProcess.ServiceController serviceController1;
-        private AxAXVLC.AxVLCPlugin2 axVLCPlugin21;
+        private System.Windows.Forms.Panel panel_VLCPlayer;
+        private System.Windows.Forms.Button button_Back;
+        private System.Windows.Forms.Button button_Play;
+        private System.Windows.Forms.Button button_Go;
+        private System.Windows.Forms.TrackBar trackBar1;
+        private System.Windows.Forms.TrackBar trackBar2;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Button button_Send;
     }
 }
 

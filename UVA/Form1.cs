@@ -73,6 +73,7 @@ namespace UVA
             InitializeComponent();
             InitSys();
             startListenUVAConnection();
+            test.test_copy();
         }
         /// <summary>
         /// 初始化整个系统
@@ -295,7 +296,9 @@ namespace UVA
         {
             //获取无人机实例
             UvaEntity uvaClient = obj as UvaEntity;
+            //获取文件写入名
             String savaFileName = Global.getSavaFileName(uvaClient);
+            /* 在这个线程中写入文件，会使得文件无法实时更新，而无法播放
             FileStream savaFileStream = null;
             try
             {
@@ -306,7 +309,7 @@ namespace UVA
 
                 //throw;
                 Trace.WriteLine(e.ToString());
-            }
+            }*/
             int sum = 0;
             //设置定时器，用于释放资源
             System.Threading.Timer Timer_deleteVideoReceiveLoop = new System.Threading.Timer(deleteVideoReceiveLoop, null, 0, 5000);
@@ -319,14 +322,16 @@ namespace UVA
                 //阻塞，只到接收到消息
                 try
                 {
-                    Trace.WriteLine("总结收到" + sum.ToString());
+                    //输出收到的消息总条数
+                    Trace.WriteLine("总计收到" + sum.ToString());
                     receiveBytes = uvaClient.videoReceiveClient.Receive(ref RemoteIpEndPoint);
-                    savaFileStream.Write(receiveBytes, 0, receiveBytes.Length);
+                    //savaFileStream.Write(receiveBytes, 0, receiveBytes.Length);
                     sum += receiveBytes.Length;
-                    savaFileStream.Flush();
+                    //savaFileStream.Flush();
                     receiveData = Encoding.UTF8.GetString(receiveBytes);
                     //输出debug信息
                     //Trace.WriteLine("接收到消息："+receiveData);
+
 #if DEBUG
                     textBox_sysLog.Invoke(setSysLogCallBack, ("接收到来自" + RemoteIpEndPoint.ToString() + "消息：" + receiveData));
 #endif
@@ -342,12 +347,17 @@ namespace UVA
 
             }
         }
+        public void sava2FileThread(object obj)
+        {
+
+        }
 
         /// <summary>
         /// 视频接收完成后，删除视频接收循环
         /// </summary>
         private void deleteVideoReceiveLoop(object state)
         {
+
             throw new NotImplementedException();
         }
 
@@ -358,5 +368,7 @@ namespace UVA
         {
 
         }
+
+  
     }
 }

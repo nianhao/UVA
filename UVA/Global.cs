@@ -12,7 +12,7 @@ namespace UVA
         /// <summary>
         /// 服务器连接端口
         /// </summary>
-        public static int CONNECTION_PORT = 9090;
+        public static int CONNECTION_PORT = 1234;
         /// <summary>
         /// 服务器连接IP
         /// </summary>

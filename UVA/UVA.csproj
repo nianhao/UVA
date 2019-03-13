@@ -90,7 +90,9 @@
     <Compile Include="SysSetting.Designer.cs">
       <DependentUpon>SysSetting.cs</DependentUpon>
     </Compile>
+    <Compile Include="test.cs" />
     <Compile Include="UvaEntity.cs" />
+    <Compile Include="VideoSegment.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
