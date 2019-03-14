@@ -19,6 +19,8 @@ namespace UVA
 {
     public partial class Form1 : Form
     {
+        static Semaphore sem = new Semaphore(1, 1);
+        static Semaphore fileSem = new Semaphore(1, 1);
         //视频接收线程
         /// <summary>
         /// 视频接收线程（目前只能处理一个，将其设置为一个容器，可以接收多个）
@@ -73,7 +75,7 @@ namespace UVA
             InitializeComponent();
             InitSys();
             startListenUVAConnection();
-            test.test_copy();
+            //test.test_copy();
         }
         /// <summary>
         /// 初始化整个系统
@@ -298,6 +300,9 @@ namespace UVA
             UvaEntity uvaClient = obj as UvaEntity;
             //获取文件写入名
             String savaFileName = Global.getSavaFileName(uvaClient);
+            uvaClient.videoFileName = savaFileName;
+            
+            videoReceiveThread.IsBackground = true;
             /* 在这个线程中写入文件，会使得文件无法实时更新，而无法播放
             FileStream savaFileStream = null;
             try
@@ -317,6 +322,23 @@ namespace UVA
             {
                 Byte[] receiveBytes;
                 string receiveData;
+                if(!uvaClient.fileIsWriting && uvaClient.getActivateTmpVideoQueue().Count>10)
+                {
+                    try
+                    {
+                        //视频写入线程
+                        Thread writeToFileThread = new Thread(new ParameterizedThreadStart(sava2FileThread));
+                        uvaClient.fileIsWriting = true;
+                        uvaClient.changeIndex();
+                        writeToFileThread.Start(uvaClient);
+                    }
+                    catch (Exception e)
+                    {
+
+                        Trace.WriteLine("写入文件线程开启失败"+e.ToString());
+                    }
+                    
+                }
                 //允许接收任意远端发送的消息
                 IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
                 //阻塞，只到接收到消息
@@ -325,6 +347,8 @@ namespace UVA
                     //输出收到的消息总条数
                     Trace.WriteLine("总计收到" + sum.ToString());
                     receiveBytes = uvaClient.videoReceiveClient.Receive(ref RemoteIpEndPoint);
+                    //写入缓存队列
+                    uvaClient.addVideSegment(receiveBytes);
                     //savaFileStream.Write(receiveBytes, 0, receiveBytes.Length);
                     sum += receiveBytes.Length;
                     //savaFileStream.Flush();
@@ -347,8 +371,51 @@ namespace UVA
 
             }
         }
+        /// <summary>
+        /// 将缓存队列中的视频写入文件
+        /// </summary>
+        /// <param name="obj"></param>
         public void sava2FileThread(object obj)
         {
+            //获取无人机实例
+            UvaEntity uvaClient = obj as UvaEntity;
+            FileStream videoSavaFileStream=null;
+            string videoSavaFile = uvaClient.videoFileName;
+            try
+            {
+                //Trace.WriteLine("写入文件");
+                fileSem.WaitOne();
+                videoSavaFileStream = new FileStream(videoSavaFile, FileMode.Append);
+                foreach (Byte[] videoSG in uvaClient.getUnactivateTmpVideoQueue())
+                {
+                    videoSavaFileStream.Write(videoSG, 0, videoSG.Length);
+                }
+                videoSavaFileStream.Flush();
+                videoSavaFileStream.Close();
+                videoSavaFileStream = null;
+                fileSem.Release();
+                uvaClient.clearQueue();
+
+            }
+            catch (Exception e)
+            {
+
+
+                Trace.WriteLine(e.ToString());
+            }
+            finally
+            {
+                if (videoSavaFileStream != null)
+                {
+                    videoSavaFileStream.Flush();
+                    videoSavaFileStream.Close();
+                    
+                }
+            }
+
+            sem.WaitOne();
+            uvaClient.fileIsWriting = false;
+            sem.Release();
 
         }
 
@@ -358,7 +425,8 @@ namespace UVA
         private void deleteVideoReceiveLoop(object state)
         {
 
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            Trace.WriteLine("检查接收任务是否完成，如果是，则准备删除线程");
         }
 
         /// <summary>

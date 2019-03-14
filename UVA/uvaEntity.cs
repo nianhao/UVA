@@ -58,22 +58,62 @@ namespace UVA
         /// <summary>
         /// 存放接收到的视频序列
         /// </summary>
-        protected ConcurrentQueue<Byte[]> tmpVideQueue;
+        protected ConcurrentQueue<Byte[]> tmpVideQueue1;
+        protected ConcurrentQueue<Byte[]> tmpVideQueue2;
         /// <summary>
         /// 添加一个视频片段
         /// </summary>
         /// <param name="video">视频段的字节码</param>
         public void addVideSegment(Byte [] video)
         {
-            tmpVideQueue.Enqueue(video);
+            if (activateIndex == 0)
+                tmpVideQueue1.Enqueue(video);
+            else
+                tmpVideQueue2.Enqueue(video);
         }
         /// <summary>
-        /// 获取文件缓存队列
+        /// 获取不活动的文件缓存队列
         /// </summary>
         /// <returns>ConcurrentQueue tmpVideoQueue 视频缓存队列</returns>
-        public ConcurrentQueue<Byte[]> getTmpVideoQueue()
+        public ConcurrentQueue<Byte[]> getUnactivateTmpVideoQueue()
         {
-            return tmpVideQueue;
+            return  (activateIndex==0)? tmpVideQueue2:tmpVideQueue1;
+        }
+        /// <summary>
+        /// 获取活动的文件缓存队列
+        /// </summary>
+        /// <returns></returns>
+        public ConcurrentQueue<Byte[]> getActivateTmpVideoQueue()
+        {
+            return (activateIndex == 0) ? tmpVideQueue1 : tmpVideQueue2;
+        }
+        protected int activateIndex = 0;
+        /// <summary>
+        /// 修改活跃的队列索引
+        /// </summary>
+        public void changeIndex()
+        {
+            activateIndex += 1;
+            activateIndex %= 2;
+        }
+        public void clearQueue()
+        {
+            if(activateIndex==1)
+            {
+                while(!tmpVideQueue1.IsEmpty)
+                {
+                    Byte[] res = null;
+                    tmpVideQueue1.TryDequeue(out res);
+                }
+            }
+            else
+            {
+                while (!tmpVideQueue2.IsEmpty)
+                {
+                    Byte[] res = null;
+                    tmpVideQueue2.TryDequeue(out res);
+                }
+            }
         }
         /// <summary>
         /// 弹出视频缓存队列的一项
@@ -82,13 +122,24 @@ namespace UVA
         public Byte []  getVideoSegment()
         {
             Byte[] res;
-            tmpVideQueue.TryDequeue(out res);
+            if(activateIndex==0)
+            {
+                tmpVideQueue1.TryDequeue(out res);
+            }
+            else
+            {
+                tmpVideQueue2.TryDequeue(out res);
+            }
             return res;
         }
         /// <summary>
         /// 标记缓存队列是否正在写入文件
         /// </summary>
-        bool fileIsWriting;
+        public bool fileIsWriting { get; set; }
+        /// <summary>
+        /// 写入的文件名
+        /// </summary>
+        public string videoFileName { get; set; }
         //构造函数
         /// <summary>
         /// 构造方法
@@ -102,7 +153,8 @@ namespace UVA
             this.loginTime = DateTime.Now.ToLocalTime().ToString();
             this.uvaName = string.Format("{0}号无人机", id);
             //实例化队列
-            tmpVideQueue = new ConcurrentQueue<byte[]>();
+            tmpVideQueue1 = new ConcurrentQueue<Byte []> ();
+            tmpVideQueue2 = new ConcurrentQueue<Byte[]>();
             fileIsWriting = false;
         }
 

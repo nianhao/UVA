@@ -93,6 +93,7 @@
     <Compile Include="test.cs" />
     <Compile Include="UvaEntity.cs" />
     <Compile Include="VideoSegment.cs" />
+    <Compile Include="VLCBase.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
