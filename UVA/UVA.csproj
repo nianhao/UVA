@@ -75,6 +75,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="All_UVA_Videos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="All_UVA_Videos.Designer.cs">
+      <DependentUpon>All_UVA_Videos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Command.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -94,6 +101,9 @@
     <Compile Include="UvaEntity.cs" />
     <Compile Include="VideoSegment.cs" />
     <Compile Include="VLCBase.cs" />
+    <EmbeddedResource Include="All_UVA_Videos.resx">
+      <DependentUpon>All_UVA_Videos.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

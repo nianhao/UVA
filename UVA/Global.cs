@@ -45,18 +45,21 @@ namespace UVA
         /// 最大心跳间隔时间
         /// </summary>
         public static int MAX_LOST_TIME = 60 * 10;//设置为10分钟
-                                                  //设置视频保存路径
-                                                  /// <summary>
-                                                  /// 视频保存路径
-                                                  /// </summary>
+        //设置视频保存路径
+        /// <summary>
+        /// 视频保存路径
+        /// </summary>
         public static String videoSavePath = "e:\\UVA\\videos\\";
+        public static string PLUGINPATH = "";
         /// <summary>
         /// 生成文件签名
         /// </summary>
         public static string getSavaFileName(UvaEntity uvaClient)
         {
             //throw new NotImplementedException();
-            return videoSavePath + uvaClient.uvaName + "_" + DateTime.Now.ToLocalTime().ToString("yyyy_MM_dd_hh_mm_ss") + ".h264";
+            return videoSavePath + "UVA_"+uvaClient.id + "_" + DateTime.Now.ToLocalTime().ToString("yyyy_MM_dd_hh_mm_ss") + ".h264";
         }
+        public static string [] PANEL_NAMES= { "panel1","panel2","panel3", "panel4", "panel5", "panel6" , "panel_VLCPlayer" };
+        public static string MAIN_PANEL = "panel_VLCPlayer";
     }
 }

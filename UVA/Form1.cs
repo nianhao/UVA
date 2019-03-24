@@ -66,7 +66,14 @@ namespace UVA
         /// 存放系统中保存过的无人机实体
         /// </summary>
         public Hashtable allUVA = Hashtable.Synchronized(new Hashtable());
-
+        /// <summary>
+        /// 存放所有的panel-handle映射
+        /// </summary>
+        public Hashtable allPanel = Hashtable.Synchronized(new Hashtable());
+        /// <summary>
+        /// 存放所有的panel-UVA映射
+        /// </summary>
+        public Hashtable panel_UVA = Hashtable.Synchronized(new Hashtable());
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -98,7 +105,17 @@ namespace UVA
 
                 Trace.WriteLine(e.ToString());
             }*/
+            //获取全部的panel
+            foreach (Control ctrl in this.Controls)
+            {
+                if (ctrl is Panel)
+                {
+                    //相关操作代码
+                    Trace.WriteLine(ctrl.Name);
+                    allPanel[ctrl.Name] = ctrl;
+                }
 
+            }
         }
         /// <summary>
         /// 设置系统日志信息
@@ -120,9 +137,55 @@ namespace UVA
             {
                 string uvaName = newUVA.uvaName;
                 this.comboBox_allUVA.Items.Add(uvaName);
-                this.comboBox_allUVA.SelectedIndex = this.comboBox_allUVA.FindString(uvaName);
                 int uvaNum = allUVA.Count;
                 this.label_uvaNum.Text = Convert.ToString(uvaNum);
+                newUVA.setVLCPlayer();
+                //绑定窗体并播放
+                newUVA.setRenderWindow(allPanel, panel_UVA);
+                newUVA.vlcPlayer.Play();
+                newUVA.sendReady();
+                this.comboBox_allUVA.SelectedIndex = this.comboBox_allUVA.FindString(uvaName);
+            }
+            else
+            {
+                //执行无人机下线操作
+                newUVA.logOut();
+                //在全部在线的无人机中删掉下线的无人机
+                allUVA.Remove(newUVA.id);
+                //释放panel
+                panel_UVA.Remove(newUVA.panelName);
+                //更改界面信息
+                string uvaName = newUVA.uvaName;
+                this.comboBox_allUVA.Items.Remove(uvaName);
+                int uvaNum = allUVA.Count;
+                this.label_uvaNum.Text = Convert.ToString(uvaNum);
+                //检查panel是否需要更换
+                if(Global.MAIN_PANEL==newUVA.panelName)
+                {
+                    int onlineUVANum = comboBox_allUVA.Items.Count;
+                    if (onlineUVANum > 0)
+                    {
+                        string lastUVAName = comboBox_allUVA.Items[onlineUVANum - 1].ToString();
+
+                        foreach (UvaEntity tmpUVA in allUVA.Values)
+                        {
+                            if (tmpUVA.uvaName == lastUVAName)
+                            {
+                                changePanel(newUVA.panelName, tmpUVA.panelName);
+                                this.comboBox_allUVA.SelectedIndex = this.comboBox_allUVA.FindString(tmpUVA.uvaName);
+                                Trace.WriteLine(string.Format("{}下线，{}替换到大图", newUVA.uvaName, tmpUVA.uvaName));
+                                break;
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        Trace.WriteLine("全部无人机都下线了");
+                    }
+                    //Trace.WriteLine(lastUVAName);
+                }
+                
             }
         }
         /// <summary>
@@ -251,13 +314,14 @@ namespace UVA
                                 {
                                     //分配端口成功，开启新的线程，接收视频信息
                                     UdpClient videoReceiveUDPClient = new UdpClient(new IPEndPoint(IPAddress.Parse(video_receive_ip), RandKey));
+                                    videoReceiveUDPClient.Close();
                                     //记录无人机
-                                    UvaEntity tmpUVA = new UvaEntity(RemoteIpEndPoint.Address.ToString(), RemoteIpEndPoint.Port, Convert.ToInt32(commands[2]), videoReceiveUDPClient);
+                                    UvaEntity tmpUVA = new UvaEntity(RemoteIpEndPoint.Address.ToString(), RemoteIpEndPoint.Port, Convert.ToInt32(commands[2]),video_receive_ip,RandKey);
                                     allUVA.Add(uvaId, tmpUVA);
                                     //开启UDP视频接收线程
-                                    videoReceiveThread = new Thread(new ParameterizedThreadStart(videoReceiveLoop));
-                                    videoReceiveThread.IsBackground = true;
-                                    videoReceiveThread.Start(tmpUVA);
+                                    //videoReceiveThread = new Thread(new ParameterizedThreadStart(videoReceiveLoop));
+                                    //videoReceiveThread.IsBackground = true;
+                                    //videoReceiveThread.Start(tmpUVA);
                                     //暂停0.5秒，等待allUVA更新
                                     //System.Threading.Thread.Sleep(500);
                                     //分配成功，输出信息
@@ -278,6 +342,8 @@ namespace UVA
                         {
                             //获取无人机id
                             int uvaId = Convert.ToInt32(commands[2]);
+                            UvaEntity tmpUva = allUVA[uvaId] as UvaEntity;
+                            comboBox_allUVA.Invoke(modifyUVACallBack, tmpUva, false);
                             break;
                         }
                     case "hart":
@@ -294,7 +360,7 @@ namespace UVA
         /// 视频接收，循环接收视频信息，并保存
         /// </summary>
         /// <param name="obj">UDPclient 用于接收无人机传输视频</param>
-        private void videoReceiveLoop(object obj)
+        /*private void videoReceiveLoop(object obj)
         {
             //获取无人机实例
             UvaEntity uvaClient = obj as UvaEntity;
@@ -303,7 +369,7 @@ namespace UVA
             uvaClient.videoFileName = savaFileName;
             
             videoReceiveThread.IsBackground = true;
-            /* 在这个线程中写入文件，会使得文件无法实时更新，而无法播放
+             在这个线程中写入文件，会使得文件无法实时更新，而无法播放
             FileStream savaFileStream = null;
             try
             {
@@ -314,7 +380,7 @@ namespace UVA
 
                 //throw;
                 Trace.WriteLine(e.ToString());
-            }*/
+            }
             int sum = 0;
             //设置定时器，用于释放资源
             System.Threading.Timer Timer_deleteVideoReceiveLoop = new System.Threading.Timer(deleteVideoReceiveLoop, null, 0, 5000);
@@ -370,7 +436,8 @@ namespace UVA
                 
 
             }
-        }
+        }*/
+
         /// <summary>
         /// 将缓存队列中的视频写入文件
         /// </summary>
@@ -434,9 +501,66 @@ namespace UVA
         /// </summary>
         private void 系统设置ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            SysSetting sysSet = new SysSetting();
+            sysSet.Show();
         }
 
-  
+        private void button_showAllVideos_Click(object sender, EventArgs e)
+        {
+            All_UVA_Videos videos = new All_UVA_Videos();
+            videos.Show();
+        }
+
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+
+        }
+        /// <summary>
+        /// 将panelOne和panelTwo 的位置互换，PanelOne为之前的大图，panelTwo为小图。
+        /// 互换后，panelTwo为大图，panelTwo为小图。并且更新Global.MAIN_PANEL的值
+        /// </summary>
+        /// <param name="panelOneName">大的panel的Name</param>
+        /// <param name="panelTwoName">小的panel的Name</param>
+        /// <returns></returns>
+        private bool changePanel(string panelOneName,string panelTwoName)
+        {
+            Panel panelOne = allPanel[panelOneName] as Panel;
+            Panel panelTwo = allPanel[panelTwoName] as Panel;
+
+            Point panelOne_Location = panelOne.Location;
+            Size panelOne_Size = panelOne.Size;
+            Point panelTwo_Location = panelTwo.Location;
+            Size panelTwo_Size = panelTwo.Size;
+
+            panelOne.Location = panelTwo_Location;
+            panelOne.Size = panelTwo_Size;
+
+            panelTwo.Location = panelOne_Location;
+            panelTwo.Size = panelOne_Size;
+
+            Global.MAIN_PANEL = panelTwo.Name;
+            return true;
+        }
+        private void comboBox_allUVA_SelectedValueChanged(object sender, EventArgs e)
+        {
+            Trace.WriteLine(comboBox_allUVA.Text);
+            if(((UvaEntity)panel_UVA[Global.MAIN_PANEL]).uvaName==comboBox_allUVA.Text)
+            {
+                Trace.WriteLine("无需交换");
+            }
+            else
+            {
+                Trace.WriteLine("需要交换");
+                foreach(string panelName in panel_UVA.Keys)
+                {
+                    UvaEntity uvaS = panel_UVA[panelName] as UvaEntity;
+                    if(uvaS.uvaName==comboBox_allUVA.Text)
+                    {
+                        changePanel(Global.MAIN_PANEL, panelName);
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
