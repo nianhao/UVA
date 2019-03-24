@@ -173,7 +173,7 @@ namespace UVA
                             {
                                 changePanel(newUVA.panelName, tmpUVA.panelName);
                                 this.comboBox_allUVA.SelectedIndex = this.comboBox_allUVA.FindString(tmpUVA.uvaName);
-                                Trace.WriteLine(string.Format("{}下线，{}替换到大图", newUVA.uvaName, tmpUVA.uvaName));
+                                Trace.WriteLine(string.Format("{0}下线，{1}替换到大图", newUVA.uvaName, tmpUVA.uvaName));
                                 break;
                             }
                         }
