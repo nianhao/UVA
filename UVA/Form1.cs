@@ -342,12 +342,75 @@ namespace UVA
                         {
                             //获取无人机id
                             int uvaId = Convert.ToInt32(commands[2]);
+                            //检查是否重复注销
+                            if (!allUVA.ContainsKey(uvaId))
+                            {
+                                string sendString = "error;DuplicatedeConnection;";
+                                Byte[] sendBytes = Encoding.UTF8.GetBytes(sendString);
+                                try
+                                {
+                                    dispatch.Send(sendBytes, sendBytes.Length, RemoteIpEndPoint);
+                                    textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId, sendString));
+
+                                }
+                                catch (Exception e)
+                                {
+#if DEBUG
+                                    textBox_sysLog.Invoke(setSysLogCallBack, e.ToString());
+#endif
+
+
+                                    textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息失败", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId));
+                                }
+                                break;
+
+                            }
+                            //获取无人机实例，进行销毁操作
                             UvaEntity tmpUva = allUVA[uvaId] as UvaEntity;
                             comboBox_allUVA.Invoke(modifyUVACallBack, tmpUva, false);
                             break;
                         }
-                    case "hart":
+                    case "heart":
                         {
+                            int id =-1;
+                            string type = null ;
+                            string info = null;
+                            try
+                            {
+                                id = Convert.ToInt32(commands[2]);
+                                type = commands[1];
+                                info = commands[3];
+                                Trace.WriteLine("心跳命令解析完毕"+type+ id.ToString()+ info);
+                                string[] infos = info.Split('&');
+                                if(!allUVA.Contains(id))
+                                {
+                                    Trace.WriteLine(string.Format("{0} {1}已经下线", type, id.ToString()));
+                                    break;
+                                }
+                                string x, y, heartTime;
+                                try
+                                {
+                                    x = infos[0];
+                                    y = infos[1];
+                                    heartTime = infos[2];
+                                    UvaEntity tmpUVA = allUVA[id] as UvaEntity;
+                                    tmpUVA.receiveHeartAsync(x, y, heartTime);
+                                    
+                                }
+                                catch (Exception e)
+                                {
+                                    Trace.WriteLine("info解析失败");
+                                    Trace.WriteLine(e.StackTrace);
+                                    throw;
+                                }
+
+                            }
+                            catch (Exception e)
+                            {
+                                Trace.WriteLine(e.StackTrace);
+
+                                throw;
+                            }
                             break;
                         }
                     default:
@@ -561,6 +624,11 @@ namespace UVA
                     }
                 }
             }
+        }
+
+        private void trackBar2_ValueChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

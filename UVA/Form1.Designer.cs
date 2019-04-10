@@ -150,11 +150,13 @@
             // 
             // trackBar2
             // 
-            this.trackBar2.Location = new System.Drawing.Point(319, 657);
+            this.trackBar2.Location = new System.Drawing.Point(305, 657);
+            this.trackBar2.Maximum = 100;
             this.trackBar2.Name = "trackBar2";
             this.trackBar2.Size = new System.Drawing.Size(233, 45);
             this.trackBar2.TabIndex = 13;
             this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
+            this.trackBar2.ValueChanged += new System.EventHandler(this.trackBar2_ValueChanged);
             // 
             // label2
             // 
@@ -255,12 +257,12 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.trackBar2);
-            this.Controls.Add(this.panel_VLCPlayer);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label_uvaNum);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox_allUVA);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.panel_VLCPlayer);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "无人机通信系统";

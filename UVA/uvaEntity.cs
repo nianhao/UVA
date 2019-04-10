@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -298,6 +299,32 @@ namespace UVA
             
 
             
+        }
+        public async Task receiveHeartAsync(string x,string y,string heartTime)
+        {
+            
+            var values = new Dictionary<string, string>
+            {
+                {"uid","uva_"+this.id.ToString() },
+                { "x_pos",x},
+                { "y_pos",y}
+            };
+            var content = new FormUrlEncodedContent(values);
+            try
+            {
+                HttpClient client = new HttpClient();
+                var response = await client.PostAsync(Global.POSTION_POST_URL, content);
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                Trace.WriteLine(responseString.ToString());
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e.StackTrace);
+                Trace.WriteLine(e.Message);
+                //throw;
+            }
+
         }
     }
 }

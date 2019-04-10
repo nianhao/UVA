@@ -16,7 +16,7 @@ namespace UVA
         /// <summary>
         /// 服务器连接IP
         /// </summary>
-        public static string CONNECTION_IP = "127.0.0.1";
+        public static string CONNECTION_IP = "0.0.0.0";
         //分配视频接收服务时的端口范围
         /// <summary>
         /// 视频接收服务器，分配的最小端口号
@@ -30,7 +30,7 @@ namespace UVA
         /// <summary>
         /// 视频接收服务器的IP地址
         /// </summary>
-        public static string RECEIVE_VIDEO_SERVER = "127.0.0.1";
+        public static string RECEIVE_VIDEO_SERVER = "0.0.0.0";
         //设置分配端口的最大重试次数
         /// <summary>
         /// 视频接收服务器，最大创建重试次数
@@ -60,6 +60,13 @@ namespace UVA
             return videoSavePath + "UVA_"+uvaClient.id + "_" + DateTime.Now.ToLocalTime().ToString("yyyy_MM_dd_hh_mm_ss") + ".h264";
         }
         public static string [] PANEL_NAMES= { "panel1","panel2","panel3", "panel4", "panel5", "panel6" , "panel_VLCPlayer" };
+        /// <summary>
+        /// 初始的大的panel的名字
+        /// </summary>
         public static string MAIN_PANEL = "panel_VLCPlayer";
+        /// <summary>
+        /// 服务器存放位置的post地址
+        /// </summary>
+        public static string POSTION_POST_URL = "http://62.234.120.220:9090/YJ_NH/processFootPrint";
     }
 }
