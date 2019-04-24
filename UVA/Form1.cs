@@ -221,7 +221,7 @@ namespace UVA
         {
             //throw new NotImplementedException();
             UdpClient dispatch = obj as UdpClient;
-            
+            BytesManager bmanager = null;
             
             while (true)
             {
@@ -235,6 +235,7 @@ namespace UVA
                 {
                     //阻塞，只到接收到消息
                     receiveBytes = dispatch.Receive(ref RemoteIpEndPoint);
+                    bmanager = new BytesManager(receiveBytes);
                     receiveData = Encoding.UTF8.GetString(receiveBytes);
                 }
                 catch (Exception e)

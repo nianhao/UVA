@@ -81,6 +81,7 @@
     <Compile Include="All_UVA_Videos.Designer.cs">
       <DependentUpon>All_UVA_Videos.cs</DependentUpon>
     </Compile>
+    <Compile Include="BytesManager.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
