@@ -404,7 +404,7 @@ namespace UVA
                                         //heartTime = infos[2];
                                         x = string.Format("{0}_{1}_{2}", bmanager.uvaMsg.latDeg, bmanager.uvaMsg.latMin, bmanager.uvaMsg.latSec);
                                         y = string.Format("{0}_{1}_{2}", bmanager.uvaMsg.lonDeg, bmanager.uvaMsg.lonMin, bmanager.uvaMsg.lonSec);
-                                        heartTime = string.Format("{0}_{1}_{3}", bmanager.uvaMsg.hour, bmanager.uvaMsg.minute, bmanager.uvaMsg.second);
+                                        heartTime = string.Format("{0}_{1}_{2}", bmanager.uvaMsg.hour, bmanager.uvaMsg.minute, bmanager.uvaMsg.second);
                                         UvaEntity tmpUVA = allUVA[id] as UvaEntity;
                                         tmpUVA.receiveHeartAsync(x, y, heartTime);
 
@@ -413,15 +413,17 @@ namespace UVA
                                     {
                                         Trace.WriteLine("info解析失败");
                                         Trace.WriteLine(e.StackTrace);
-                                        throw;
+                                        Trace.WriteLine(e.Message);
+                                        //throw;
                                     }
 
                                 }
                                 catch (Exception e)
                                 {
                                     Trace.WriteLine(e.StackTrace);
+                                    Trace.WriteLine(e.Message);
 
-                                    throw;
+                                    //throw;
                                 }
                                 break;
                             }
