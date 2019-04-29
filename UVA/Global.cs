@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace UVA
         /// <summary>
         /// 服务器连接IP
         /// </summary>
-        public static string CONNECTION_IP = "0.0.0.0";
+        public static string CONNECTION_IP = "192.168.6.108";
         //分配视频接收服务时的端口范围
         /// <summary>
         /// 视频接收服务器，分配的最小端口号
@@ -30,7 +31,7 @@ namespace UVA
         /// <summary>
         /// 视频接收服务器的IP地址
         /// </summary>
-        public static string RECEIVE_VIDEO_SERVER = "0.0.0.0";
+        public static string RECEIVE_VIDEO_SERVER = "192.168.6.108";
         //设置分配端口的最大重试次数
         /// <summary>
         /// 视频接收服务器，最大创建重试次数
@@ -49,7 +50,7 @@ namespace UVA
         /// <summary>
         /// 视频保存路径
         /// </summary>
-        public static String videoSavePath = "e:\\UVA\\videos\\";
+        public static String videoSavePath = "e:\\";
         public static string PLUGINPATH = "";
         /// <summary>
         /// 生成文件签名
@@ -68,5 +69,10 @@ namespace UVA
         /// 服务器存放位置的post地址
         /// </summary>
         public static string POSTION_POST_URL = "http://62.234.120.220:9090/YJ_NH/processFootPrint";
+        /// <summary>
+        /// 接收到的消息来源
+        /// </summary>
+        public  enum msgFromType {uva, helmet };
+        public static char DuplicatedeDisconnect = '\u0003';
     }
 }

@@ -17,22 +17,26 @@ namespace UVA
             public char cliType;
             public char lonDir;
             public char latDir;
-            public UInt32 cliNum;
-            public UInt32 lonDeg;
-            public UInt32 lonMin;
-            public UInt32 lonSec;
-            public UInt32 latDeg;
-            public UInt32 latMin;
-            public UInt32 latSec;
-            public UInt32 year;
-            public UInt32 month;
-            public UInt32 day;
-            public UInt32 hour;
-            public UInt32 minute;
-            public UInt32 second;
+            public Int32 cliNum;
+            public Int32 lonDeg;
+            public Int32 lonMin;
+            public Int32 lonSec;
+            public Int32 latDeg;
+            public Int32 latMin;
+            public Int32 latSec;
+            public Int32 year;
+            public Int32 month;
+            public Int32 day;
+            public Int32 hour;
+            public Int32 minute;
+            public Int32 second;
+            public Int32 IPFirst;
+            public Int32 IPSecond;
+            public Int32 IPThird;
+            public Int32 IPFourth;
         }
-
-
+        public UVA_RECEIVE uvaMsg;
+        public int msgForm = -1;
 
         public BytesManager(byte [] message)
         {
@@ -44,8 +48,9 @@ namespace UVA
                 case 3:
                 case 4:
                     UVA_RECEIVE m = new UVA_RECEIVE();
-                    UVA_RECEIVE myMsg = (UVA_RECEIVE)BytesToStuct(message, m.GetType());
-                    Console.WriteLine("s");
+                    msgForm = (int)Global.msgFromType.uva;
+                    uvaMsg = (UVA_RECEIVE)BytesToStuct(message, m.GetType());
+                    //Console.WriteLine("s");
                     break;
                 default:
                     break;

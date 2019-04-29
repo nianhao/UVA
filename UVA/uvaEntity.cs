@@ -287,8 +287,8 @@ namespace UVA
                 tmpUdpClient.Connect(this.ip, this.port);
 
                 // Sends a message to the host to which you have connected.
-                Byte[] sendBytes = Encoding.UTF8.GetBytes(Command.READY_COMMAND(this.videoIp,this.videoPort.ToString()));
-
+                //Byte[] sendBytes = Encoding.UTF8.GetBytes(Command.READY_COMMAND(this.videoIp,this.videoPort.ToString()));
+                Byte[] sendBytes = Command.Ready(this.videoIp, this.videoPort);
                 tmpUdpClient.Send(sendBytes, sendBytes.Length);
             }
             catch (Exception e)
@@ -300,9 +300,28 @@ namespace UVA
 
             
         }
+        public void sendHeart()
+        {
+            UdpClient tmpUdpClient = new UdpClient();
+            try
+            {
+
+                tmpUdpClient.Connect(this.ip, this.port);
+
+                // Sends a message to the host to which you have connected.
+                //Byte[] sendBytes = Encoding.UTF8.GetBytes(Command.READY_COMMAND(this.videoIp,this.videoPort.ToString()));
+                Byte[] sendBytes = Command.HeratResponse();
+                tmpUdpClient.Send(sendBytes, sendBytes.Length);
+            }
+            catch (Exception e)
+            {
+
+                Trace.WriteLine(e.StackTrace);
+            }
+        }
         public async Task receiveHeartAsync(string x,string y,string heartTime)
         {
-            
+            sendHeart();   
             var values = new Dictionary<string, string>
             {
                 {"uid","uva_"+this.id.ToString() },
