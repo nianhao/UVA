@@ -251,172 +251,187 @@ namespace UVA
                 textBox_sysLog.Invoke(setSysLogCallBack,("接收到来自"+RemoteIpEndPoint.ToString()+"消息：" + receiveData));
 #endif
                 string[] commands = receiveData.Split(';');
-                switch(commands[0])
+                if(bmanager.msgForm==(int)Global.msgFromType.uva|| bmanager.msgForm == (int)Global.msgFromType.helmet)
                 {
-                    case "start":
-                        {
+                    switch (bmanager.uvaMsg.sendType)
+                    {
+                        case '\u0001':
+                            {
 #if DEBUG
-                            textBox_sysLog.Invoke(setSysLogCallBack, ("解析到 start 命令"));
+                                textBox_sysLog.Invoke(setSysLogCallBack, ("解析到 begin 命令"));
 
 #endif
-                            //获取无人机id
-                            int uvaId = Convert.ToInt32(commands[2]);
-                            //检查是否重复连接
-                            if (allUVA.ContainsKey(uvaId))
-                            {
-                                string sendString = "error;DuplicateConnection;";
-                                Byte[] sendBytes = Encoding.UTF8.GetBytes(sendString);
-                                try
+                                //获取无人机id
+                                int uvaId = bmanager.uvaMsg.cliNum;
+                                //检查是否重复连接
+                                if (allUVA.ContainsKey(uvaId))
                                 {
-                                    dispatch.Send(sendBytes, sendBytes.Length, RemoteIpEndPoint);
-                                    textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId, sendString));
+                                    string sendString = "error;DuplicateConnection;";
+                                    //Byte[] sendBytes = Encoding.UTF8.GetBytes(sendString);
+                                    Byte[] sendBytes = Command.DuplicateConnection();
+                                    try
+                                    {
+                                        dispatch.Send(sendBytes, sendBytes.Length, RemoteIpEndPoint);
+                                        textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId, sendString));
+
+                                    }
+                                    catch (Exception e)
+                                    {
+#if DEBUG
+                                        textBox_sysLog.Invoke(setSysLogCallBack, e.ToString());
+#endif
+
+
+                                        textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息失败", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId));
+                                    }
+                                    break;
 
                                 }
-                                catch (Exception e)
+                                //接收到连接信息，输出日志信息
+                                textBox_sysLog.Invoke(setSysLogCallBack, ("接收到来自" + RemoteIpEndPoint + "的连接请求"));
+                                //为新的UVA分配接收视频信息的udpClient
+                                int restTimes = Global.MAX_RETRY_TIMES;
+                                while (true)
                                 {
+                                    if (restTimes > 0)
+                                    {
 #if DEBUG
-                                    textBox_sysLog.Invoke(setSysLogCallBack, e.ToString());
+                                        textBox_sysLog.Invoke(setSysLogCallBack, ("正在为" + RemoteIpEndPoint.Address + ":" + RemoteIpEndPoint.Port + "分配视频接收服务器"));
+                                        textBox_sysLog.Invoke(setSysLogCallBack, (string.Format("第{0}/{1}次尝试", Global.MAX_RETRY_TIMES - restTimes + 1, Global.MAX_RETRY_TIMES)));
 #endif
-
-
-                                    textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息失败", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId));
+                                    }
+                                    else
+                                    {
+                                        textBox_sysLog.Invoke(setSysLogCallBack, (string.Format("为{0}:{1}分配视频接收服务器失败，系统资源不足", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port)));
+                                        break;
+                                    }
+                                    restTimes--;
+                                    //获取视频接收服务器的ip地址
+                                    string video_receive_ip = Global.RECEIVE_VIDEO_SERVER;
+                                    //生成端口，检查是否可用
+                                    System.Random a = new Random(System.DateTime.Now.Millisecond); // use System.DateTime.Now.Millisecond as seed
+                                    int RandKey = a.Next(Global.MINPORT, Global.MAXPORT);
+#if DEBUG
+                                    textBox_sysLog.Invoke(setSysLogCallBack, string.Format("为{0}:{1}尝试分配端口{2}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, RandKey));
+#endif
+                                    try
+                                    {
+                                        //分配端口成功，开启新的线程，接收视频信息
+                                        UdpClient videoReceiveUDPClient = new UdpClient(new IPEndPoint(IPAddress.Parse(video_receive_ip), RandKey));
+                                        videoReceiveUDPClient.Close();
+                                        //记录无人机
+                                        UvaEntity tmpUVA = new UvaEntity(RemoteIpEndPoint.Address.ToString(), RemoteIpEndPoint.Port, bmanager.uvaMsg.cliNum, video_receive_ip, RandKey);
+                                        allUVA.Add(uvaId, tmpUVA);
+                                        //开启UDP视频接收线程
+                                        //videoReceiveThread = new Thread(new ParameterizedThreadStart(videoReceiveLoop));
+                                        //videoReceiveThread.IsBackground = true;
+                                        //videoReceiveThread.Start(tmpUVA);
+                                        //暂停0.5秒，等待allUVA更新
+                                        //System.Threading.Thread.Sleep(500);
+                                        //分配成功，输出信息
+                                        textBox_sysLog.Invoke(setSysLogCallBack, (string.Format("为{0}:{1}分配视频接收服务器成功，视频接收地址为{2}:{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, video_receive_ip, RandKey)));
+                                        //在全部无人机combbox里面添加一项
+                                        comboBox_allUVA.Invoke(modifyUVACallBack, tmpUVA, true);
+                                        break;
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Trace.WriteLine(e.StackTrace);
+                                    }
                                 }
                                 break;
-
                             }
-                            //接收到连接信息，输出日志信息
-                            textBox_sysLog.Invoke(setSysLogCallBack, ("接收到来自" + RemoteIpEndPoint + "的连接请求"));
-                            //为新的UVA分配接收视频信息的udpClient
-                            int restTimes = Global.MAX_RETRY_TIMES;
-                            while (true)
+
+                        case '\u0003':
                             {
-                                if (restTimes > 0)
+                                //获取无人机id
+                                int uvaId = Convert.ToInt32(commands[2]);
+                                //检查是否重复注销
+                                if (!allUVA.ContainsKey(uvaId))
                                 {
+                                    string sendString = "error;DuplicatedeDisconnect;";
+                                    //Byte[] sendBytes = Encoding.UTF8.GetBytes(sendString);
+                                    Byte[] sendBytes = Command.Error(Global.DuplicatedeDisconnect);
+                                    try
+                                    {
+                                        dispatch.Send(sendBytes, sendBytes.Length, RemoteIpEndPoint);
+                                        textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId, sendString));
+
+                                    }
+                                    catch (Exception e)
+                                    {
 #if DEBUG
-                                    textBox_sysLog.Invoke(setSysLogCallBack, ("正在为" + RemoteIpEndPoint.Address + ":" + RemoteIpEndPoint.Port + "分配视频接收服务器"));
-                                    textBox_sysLog.Invoke(setSysLogCallBack, (string.Format("第{0}/{1}次尝试", Global.MAX_RETRY_TIMES - restTimes + 1, Global.MAX_RETRY_TIMES)));
+                                        textBox_sysLog.Invoke(setSysLogCallBack, e.ToString());
 #endif
-                                }
-                                else
-                                {
-                                    textBox_sysLog.Invoke(setSysLogCallBack, (string.Format("为{0}:{1}分配视频接收服务器失败，系统资源不足", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port)));
+
+
+                                        textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息失败", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId));
+                                    }
                                     break;
+
                                 }
-                                restTimes--;
-                                //获取视频接收服务器的ip地址
-                                string video_receive_ip = Global.RECEIVE_VIDEO_SERVER;
-                                //生成端口，检查是否可用
-                                System.Random a = new Random(System.DateTime.Now.Millisecond); // use System.DateTime.Now.Millisecond as seed
-                                int RandKey = a.Next(Global.MINPORT, Global.MAXPORT);
-#if DEBUG
-                                textBox_sysLog.Invoke(setSysLogCallBack, string.Format("为{0}:{1}尝试分配端口{2}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, RandKey));
-#endif
+                                //获取无人机实例，进行销毁操作
+                                UvaEntity tmpUva = allUVA[uvaId] as UvaEntity;
+                                comboBox_allUVA.Invoke(modifyUVACallBack, tmpUva, false);
+                                break;
+                            }
+                        case '\u0002':
+                            {
+                                int id = -1;
+                                string type = null;
+                                string info = null;
                                 try
                                 {
-                                    //分配端口成功，开启新的线程，接收视频信息
-                                    UdpClient videoReceiveUDPClient = new UdpClient(new IPEndPoint(IPAddress.Parse(video_receive_ip), RandKey));
-                                    videoReceiveUDPClient.Close();
-                                    //记录无人机
-                                    UvaEntity tmpUVA = new UvaEntity(RemoteIpEndPoint.Address.ToString(), RemoteIpEndPoint.Port, Convert.ToInt32(commands[2]),video_receive_ip,RandKey);
-                                    allUVA.Add(uvaId, tmpUVA);
-                                    //开启UDP视频接收线程
-                                    //videoReceiveThread = new Thread(new ParameterizedThreadStart(videoReceiveLoop));
-                                    //videoReceiveThread.IsBackground = true;
-                                    //videoReceiveThread.Start(tmpUVA);
-                                    //暂停0.5秒，等待allUVA更新
-                                    //System.Threading.Thread.Sleep(500);
-                                    //分配成功，输出信息
-                                    textBox_sysLog.Invoke(setSysLogCallBack, (string.Format("为{0}:{1}分配视频接收服务器成功，视频接收地址为{2}:{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, video_receive_ip, RandKey)));
-                                    //在全部无人机combbox里面添加一项
-                                    comboBox_allUVA.Invoke(modifyUVACallBack, tmpUVA, true);
-                                    break;
+                                    //获取设备的id号
+                                    //id = Convert.ToInt32(commands[2]);
+                                    id = bmanager.uvaMsg.cliNum;
+                                    //获取设备类型
+                                    type = bmanager.uvaMsg.cliType=='\u0001'?"uva": "helmet";
+                                    //type = commands[1];
+                                    //info = commands[3];
+                                    Trace.WriteLine("心跳命令解析完毕" + type + id.ToString() );
+                                    //string[] infos = info.Split('&');
+                                    if (!allUVA.Contains(id))
+                                    {
+                                        Trace.WriteLine(string.Format("{0} {1}已经下线", type, id.ToString()));
+                                        break;
+                                    }
+                                    string x, y, heartTime;
+                                    try
+                                    {
+                                        //x = infos[0];
+                                        //y = infos[1];
+                                        //heartTime = infos[2];
+                                        x = string.Format("{0}_{1}_{2}", bmanager.uvaMsg.latDeg, bmanager.uvaMsg.latMin, bmanager.uvaMsg.latSec);
+                                        y = string.Format("{0}_{1}_{2}", bmanager.uvaMsg.lonDeg, bmanager.uvaMsg.lonMin, bmanager.uvaMsg.lonSec);
+                                        heartTime = string.Format("{0}_{1}_{2}", bmanager.uvaMsg.hour, bmanager.uvaMsg.minute, bmanager.uvaMsg.second);
+                                        UvaEntity tmpUVA = allUVA[id] as UvaEntity;
+                                        tmpUVA.receiveHeartAsync(x, y, heartTime);
+
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Trace.WriteLine("info解析失败");
+                                        Trace.WriteLine(e.StackTrace);
+                                        Trace.WriteLine(e.Message);
+                                        //throw;
+                                    }
+
                                 }
                                 catch (Exception e)
                                 {
                                     Trace.WriteLine(e.StackTrace);
-                                }
-                            }
-                            break;
-                        }
+                                    Trace.WriteLine(e.Message);
 
-                    case "endTransform":
-                        {
-                            //获取无人机id
-                            int uvaId = Convert.ToInt32(commands[2]);
-                            //检查是否重复注销
-                            if (!allUVA.ContainsKey(uvaId))
-                            {
-                                string sendString = "error;DuplicatedeConnection;";
-                                Byte[] sendBytes = Encoding.UTF8.GetBytes(sendString);
-                                try
-                                {
-                                    dispatch.Send(sendBytes, sendBytes.Length, RemoteIpEndPoint);
-                                    textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId, sendString));
-
-                                }
-                                catch (Exception e)
-                                {
-#if DEBUG
-                                    textBox_sysLog.Invoke(setSysLogCallBack, e.ToString());
-#endif
-
-
-                                    textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息失败", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId));
+                                    //throw;
                                 }
                                 break;
-
                             }
-                            //获取无人机实例，进行销毁操作
-                            UvaEntity tmpUva = allUVA[uvaId] as UvaEntity;
-                            comboBox_allUVA.Invoke(modifyUVACallBack, tmpUva, false);
+                        default:
                             break;
-                        }
-                    case "heart":
-                        {
-                            int id =-1;
-                            string type = null ;
-                            string info = null;
-                            try
-                            {
-                                id = Convert.ToInt32(commands[2]);
-                                type = commands[1];
-                                info = commands[3];
-                                Trace.WriteLine("心跳命令解析完毕"+type+ id.ToString()+ info);
-                                string[] infos = info.Split('&');
-                                if(!allUVA.Contains(id))
-                                {
-                                    Trace.WriteLine(string.Format("{0} {1}已经下线", type, id.ToString()));
-                                    break;
-                                }
-                                string x, y, heartTime;
-                                try
-                                {
-                                    x = infos[0];
-                                    y = infos[1];
-                                    heartTime = infos[2];
-                                    UvaEntity tmpUVA = allUVA[id] as UvaEntity;
-                                    tmpUVA.receiveHeartAsync(x, y, heartTime);
-                                    
-                                }
-                                catch (Exception e)
-                                {
-                                    Trace.WriteLine("info解析失败");
-                                    Trace.WriteLine(e.StackTrace);
-                                    throw;
-                                }
-
-                            }
-                            catch (Exception e)
-                            {
-                                Trace.WriteLine(e.StackTrace);
-
-                                throw;
-                            }
-                            break;
-                        }
-                    default:
-                        break;
+                    }
                 }
+                
 
             }
         }
