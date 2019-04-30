@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +17,7 @@ namespace UVA
         /// <summary>
         /// 服务器连接IP
         /// </summary>
-        public static string CONNECTION_IP = "192.168.6.108";
+        public static string CONNECTION_IP = "0.0.0.0";
         //分配视频接收服务时的端口范围
         /// <summary>
         /// 视频接收服务器，分配的最小端口号
@@ -31,7 +31,7 @@ namespace UVA
         /// <summary>
         /// 视频接收服务器的IP地址
         /// </summary>
-        public static string RECEIVE_VIDEO_SERVER = "192.168.6.108";
+        public static string RECEIVE_VIDEO_SERVER = "58.87.106.50";
         //设置分配端口的最大重试次数
         /// <summary>
         /// 视频接收服务器，最大创建重试次数

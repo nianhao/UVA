@@ -143,6 +143,7 @@ namespace UVA
                 //绑定窗体并播放
                 newUVA.setRenderWindow(allPanel, panel_UVA);
                 newUVA.vlcPlayer.Play();
+                //发送ready信息 
                 newUVA.sendReady();
                 this.comboBox_allUVA.SelectedIndex = this.comboBox_allUVA.FindString(uvaName);
             }
@@ -317,7 +318,7 @@ namespace UVA
                                     try
                                     {
                                         //分配端口成功，开启新的线程，接收视频信息
-                                        UdpClient videoReceiveUDPClient = new UdpClient(new IPEndPoint(IPAddress.Parse(video_receive_ip), RandKey));
+                                        UdpClient videoReceiveUDPClient = new UdpClient(new IPEndPoint(IPAddress.Parse("0.0.0.0"), RandKey));
                                         videoReceiveUDPClient.Close();
                                         //记录无人机
                                         UvaEntity tmpUVA = new UvaEntity(RemoteIpEndPoint.Address.ToString(), RemoteIpEndPoint.Port, bmanager.uvaMsg.cliNum, video_receive_ip, RandKey);
@@ -337,6 +338,8 @@ namespace UVA
                                     catch (Exception e)
                                     {
                                         Trace.WriteLine(e.StackTrace);
+                                        textBox_sysLog.Invoke(setSysLogCallBack, e.StackTrace.ToString());
+                                        textBox_sysLog.Invoke(setSysLogCallBack, e.Message.ToString());
                                     }
                                 }
                                 break;
