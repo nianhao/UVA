@@ -54,7 +54,7 @@ namespace UVA
         /// 生成重复连接错误的报文字节码
         /// </summary>
         /// <returns>Byte[] struct UVA_RESPONSE转换出的字节码</returns>
-        public static Byte [] DuplicateConnection()
+        public static Byte [] DuplicateConnection(string ip, int port)
         {
             UVA_RESPONSE repMsg = new UVA_RESPONSE();
             //'\u0003':error
@@ -62,6 +62,19 @@ namespace UVA
             //更多错误消息的定义，请查看通信协议
             repMsg.sendType = '\u0003';
             repMsg.errorType = '\u0001';
+            string[] ips = ip.Split('.');
+            int ipFirst = Convert.ToInt32(ips[0]);
+            int ipSecond = Convert.ToInt32(ips[1]);
+            int ipThird = Convert.ToInt32(ips[2]);
+            int ipFourth = Convert.ToInt32(ips[3]);
+
+           // UVA_RESPONSE repMsg = new UVA_RESPONSE();
+           // repMsg.sendType = '\u0001';
+            repMsg.IPFirst = ipFirst;
+            repMsg.IPSecond = ipSecond;
+            repMsg.IPThird = ipThird;
+            repMsg.IPFourth = ipFourth;
+            repMsg.Port = port;
             return StructToBytes(repMsg);
         }
         /// <summary>

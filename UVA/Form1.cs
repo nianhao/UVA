@@ -1,5 +1,4 @@
-﻿using AxWMPLib;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -143,6 +142,7 @@ namespace UVA
                 //绑定窗体并播放
                 newUVA.setRenderWindow(allPanel, panel_UVA);
                 newUVA.vlcPlayer.Play();
+                //发送ready信息 
                 newUVA.sendReady();
                 this.comboBox_allUVA.SelectedIndex = this.comboBox_allUVA.FindString(uvaName);
             }
@@ -268,7 +268,8 @@ namespace UVA
                                 {
                                     string sendString = "error;DuplicateConnection;";
                                     //Byte[] sendBytes = Encoding.UTF8.GetBytes(sendString);
-                                    Byte[] sendBytes = Command.DuplicateConnection();
+                                    UvaEntity tmpUva = allUVA[uvaId] as UvaEntity;
+                                    Byte[] sendBytes = Command.DuplicateConnection(tmpUva.videoIp,tmpUva.videoPort);
                                     try
                                     {
                                         dispatch.Send(sendBytes, sendBytes.Length, RemoteIpEndPoint);
@@ -317,10 +318,10 @@ namespace UVA
                                     try
                                     {
                                         //分配端口成功，开启新的线程，接收视频信息
-                                        UdpClient videoReceiveUDPClient = new UdpClient(new IPEndPoint(IPAddress.Parse(video_receive_ip), RandKey));
+                                        UdpClient videoReceiveUDPClient = new UdpClient(new IPEndPoint(IPAddress.Parse("0.0.0.0"), RandKey));
                                         videoReceiveUDPClient.Close();
                                         //记录无人机
-                                        UvaEntity tmpUVA = new UvaEntity(RemoteIpEndPoint.Address.ToString(), RemoteIpEndPoint.Port, bmanager.uvaMsg.cliNum, video_receive_ip, RandKey);
+                                        UvaEntity tmpUVA = new UvaEntity(RemoteIpEndPoint.Address.ToString(), RemoteIpEndPoint.Port, bmanager.uvaMsg.cliNum, video_receive_ip, RandKey,RemoteIpEndPoint);
                                         allUVA.Add(uvaId, tmpUVA);
                                         //开启UDP视频接收线程
                                         //videoReceiveThread = new Thread(new ParameterizedThreadStart(videoReceiveLoop));
@@ -337,6 +338,8 @@ namespace UVA
                                     catch (Exception e)
                                     {
                                         Trace.WriteLine(e.StackTrace);
+                                        textBox_sysLog.Invoke(setSysLogCallBack, e.StackTrace.ToString());
+                                        textBox_sysLog.Invoke(setSysLogCallBack, e.Message.ToString());
                                     }
                                 }
                                 break;
@@ -345,7 +348,9 @@ namespace UVA
                         case '\u0003':
                             {
                                 //获取无人机id
-                                int uvaId = Convert.ToInt32(commands[2]);
+                                //int uvaId = Convert.ToInt32(commands[2]);
+                                //获取无人机id
+                                int uvaId = bmanager.uvaMsg.cliNum;
                                 //检查是否重复注销
                                 if (!allUVA.ContainsKey(uvaId))
                                 {
