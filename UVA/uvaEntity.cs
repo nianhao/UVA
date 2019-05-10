@@ -374,5 +374,28 @@ namespace UVA
             }
 
         }
+        /// <summary>
+        /// 发送close命令
+        /// </summary>
+        public void sendClose()
+        {
+            //throw new NotImplementedException();
+            UdpClient tmpUdpClient = new UdpClient();
+            try
+            {
+
+                // tmpUdpClient.Connect(this.ip, this.port);
+
+                // Sends a message to the host to which you have connected.
+                //Byte[] sendBytes = Encoding.UTF8.GetBytes(Command.READY_COMMAND(this.videoIp,this.videoPort.ToString()));
+                Byte[] sendBytes = Command.Close();
+                tmpUdpClient.Send(sendBytes, sendBytes.Length, this.RemoteIpPoint);
+            }
+            catch (Exception e)
+            {
+
+                Trace.WriteLine(e.StackTrace);
+            }
+        }
     }
 }

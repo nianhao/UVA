@@ -73,8 +73,26 @@ namespace UVA
         /// 接收到的消息来源
         /// </summary>
         public  enum msgFromType {uva, helmet };
+        /// <summary>
+        /// 配置发送出去的命令对应的表示
+        /// </summary>
         public static char DuplicatedeDisconnect = '\u0003';
-
+        public static char cmdTypeREADY = '\u0001';
+        public static char cmdTypeHEART = '\u0002';
+        public static char cmdTypeERROR = '\u0003';
+        public static char cmdTypeOK = '\u0004';
+        public static char cmdTypeCLOSE = '\u0005';
+        /// <summary>
+        /// 配置无人机发送的，我们接收到的命令表示
+        /// </summary>
+        public static char recTypeBEGIN = '\u0001';
+        public static char recTypeHEART = '\u0002';
+        public static char recTypeEND = '\u0003';
+        public static char recTypeOK = '\u0004';
+        //public static char cmdTypeCLOSE = '\u0005';
+        /// <summary>
+        /// VLC监听的地址
+        /// </summary>
         public static string SERVERIP = "172.21.0.2";
     }
 }

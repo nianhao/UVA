@@ -80,7 +80,7 @@ namespace UVA
         {
             InitializeComponent();
             InitSys();
-            startListenUVAConnection();
+            
             //test.test_copy();
         }
         /// <summary>
@@ -156,8 +156,13 @@ namespace UVA
                 panel_UVA.Remove(newUVA.panelName);
                 //更改界面信息
                 string uvaName = newUVA.uvaName;
-                this.comboBox_allUVA.Items.Remove(uvaName);
+                this.comboBox_allUVA.Items.Remove(uvaName);          
                 int uvaNum = allUVA.Count;
+                //如果删除了最后一条项目，则清除一下combbox
+                if(uvaNum==0)
+                {
+                    this.comboBox_allUVA.Text = "";
+                }
                 this.label_uvaNum.Text = Convert.ToString(uvaNum);
                 //检查panel是否需要更换
                 if(Global.MAIN_PANEL==newUVA.panelName)
@@ -346,7 +351,11 @@ namespace UVA
                             }
 
                         case '\u0003':
+                        case '\u0004':
                             {
+#if DEBUG
+                                textBox_sysLog.Invoke(setSysLogCallBack, string.Format("接收到{0}信息",bmanager.uvaMsg.sendType=='\u0003'?"end":"ok"));
+#endif
                                 //获取无人机id
                                 //int uvaId = Convert.ToInt32(commands[2]);
                                 //获取无人机id
@@ -648,6 +657,37 @@ namespace UVA
         }
 
         private void trackBar2_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+        /// <summary>
+        /// 发送close命令，主动断开连接
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_close_Click(object sender, EventArgs e)
+        {
+            if (comboBox_allUVA.Text == "") return;
+            foreach(UvaEntity tmpUVA in allUVA)
+            {
+                if(comboBox_allUVA.Text==tmpUVA.uvaName)
+                {
+                    tmpUVA.sendClose();
+                    break;
+                }
+            }
+        }
+        /// <summary>
+        /// 开始监听
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_start_Click(object sender, EventArgs e)
+        {
+            startListenUVAConnection();
+        }
+
+        private void button_stop_Click(object sender, EventArgs e)
         {
 
         }

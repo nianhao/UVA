@@ -50,6 +50,9 @@
             this.panel6 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.button_close = new System.Windows.Forms.Button();
+            this.button_start = new System.Windows.Forms.Button();
+            this.button_stop = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -241,11 +244,44 @@
             this.panel5.Size = new System.Drawing.Size(216, 147);
             this.panel5.TabIndex = 24;
             // 
+            // button_close
+            // 
+            this.button_close.Location = new System.Drawing.Point(964, 593);
+            this.button_close.Name = "button_close";
+            this.button_close.Size = new System.Drawing.Size(75, 23);
+            this.button_close.TabIndex = 26;
+            this.button_close.Text = "断开连接";
+            this.button_close.UseVisualStyleBackColor = true;
+            this.button_close.Click += new System.EventHandler(this.button_close_Click);
+            // 
+            // button_start
+            // 
+            this.button_start.Location = new System.Drawing.Point(645, 634);
+            this.button_start.Name = "button_start";
+            this.button_start.Size = new System.Drawing.Size(75, 23);
+            this.button_start.TabIndex = 27;
+            this.button_start.Text = "开始监听";
+            this.button_start.UseVisualStyleBackColor = true;
+            this.button_start.Click += new System.EventHandler(this.button_start_Click);
+            // 
+            // button_stop
+            // 
+            this.button_stop.Location = new System.Drawing.Point(645, 688);
+            this.button_stop.Name = "button_stop";
+            this.button_stop.Size = new System.Drawing.Size(75, 23);
+            this.button_stop.TabIndex = 28;
+            this.button_stop.Text = "停止监听";
+            this.button_stop.UseVisualStyleBackColor = true;
+            this.button_stop.Click += new System.EventHandler(this.button_stop_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1233, 822);
+            this.Controls.Add(this.button_stop);
+            this.Controls.Add(this.button_start);
+            this.Controls.Add(this.button_close);
             this.Controls.Add(this.panel6);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel4);
@@ -299,6 +335,9 @@
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Button button_close;
+        private System.Windows.Forms.Button button_start;
+        private System.Windows.Forms.Button button_stop;
     }
 }
 
