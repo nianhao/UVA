@@ -227,7 +227,9 @@ namespace UVA
             //throw new NotImplementedException();
             UdpClient dispatch = obj as UdpClient;
             BytesManager bmanager = null;
-            
+#if DEBUG
+            textBox_sysLog.Invoke(setSysLogCallBack, "启动成功");
+#endif            
             while (true)
             {
                 //阻塞，只到接收到消息
