@@ -670,8 +670,9 @@ namespace UVA
         private void button_close_Click(object sender, EventArgs e)
         {
             if (comboBox_allUVA.Text == "") return;
-            foreach(UvaEntity tmpUVA in allUVA)
+            foreach(DictionaryEntry dtmpUVA in allUVA)
             {
+                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
                 if(comboBox_allUVA.Text==tmpUVA.uvaName)
                 {
                     tmpUVA.sendClose();
