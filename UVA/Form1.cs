@@ -424,7 +424,7 @@ namespace UVA
                                         heartTime = string.Format("{0}_{1}_{2}", bmanager.uvaMsg.hour, bmanager.uvaMsg.minute, bmanager.uvaMsg.second);
                                         UvaEntity tmpUVA = allUVA[id] as UvaEntity;
                                         //tmpUVA.receiveHeartAsync(x, y, heartTime);
-                                        byte[] sendBytes = Command.HeratResponse();
+                                        byte[] sendBytes = Command.HeratResponse(tmpUVA);
                                         dispatch.Send(sendBytes, sendBytes.Length,RemoteIpEndPoint);
 
                                     }
