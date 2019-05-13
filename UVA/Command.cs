@@ -33,10 +33,11 @@ namespace UVA
         /// <summary>
         /// 生成心跳响应的信息
         /// </summary>
-        public static Byte[] HeratResponse()
+        public static Byte[] HeratResponse(UvaEntity uvaT)
         {
             UVA_RESPONSE repMsg = new UVA_RESPONSE();
             repMsg.sendType = '\u0002';
+            repMsg.bandWidth = uvaT.bandWidth;
             return StructToBytes(repMsg);
         }
         /// <summary>

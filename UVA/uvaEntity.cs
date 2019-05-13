@@ -162,6 +162,7 @@ namespace UVA
         /// </summary>
         public string panelName { get; set; }
         public IPEndPoint RemoteIpPoint { get; private set; }
+        public int bandWidth { get; private set; }
 
         /// <summary>
         /// 无人机下线
@@ -245,6 +246,7 @@ namespace UVA
             //设置视频接收地址
             this.videoIp = videoIp;
             this.videoPort = videoPort;
+            this.bandWidth = 4;
         }
         //构造函数
         /// <summary>
@@ -265,6 +267,7 @@ namespace UVA
             //设置视频接收地址
             this.videoIp = videoIp;
             this.videoPort = videoPort;
+            this.bandWidth = 4;
         }
         /// <summary>
         /// 构造方法，将远端的ippoint传入
@@ -291,6 +294,7 @@ namespace UVA
             this.videoIp = videoIp;
             this.videoPort = videoPort;
             this.RemoteIpPoint = ippoint;
+            this.bandWidth = 4;
         }
         public void setVLCPlayer()
         {
@@ -388,8 +392,9 @@ namespace UVA
 
                 // Sends a message to the host to which you have connected.
                 //Byte[] sendBytes = Encoding.UTF8.GetBytes(Command.READY_COMMAND(this.videoIp,this.videoPort.ToString()));
-                Byte[] sendBytes = Command.Close();
-                tmpUdpClient.Send(sendBytes, sendBytes.Length, this.RemoteIpPoint);
+                //Byte[] sendBytes = Command.Close();
+                //tmpUdpClient.Send(sendBytes, sendBytes.Length, this.RemoteIpPoint);
+                bandWidth = -1;
             }
             catch (Exception e)
             {
