@@ -391,6 +391,7 @@ namespace UVA
                                 comboBox_allUVA.Invoke(modifyUVACallBack, tmpUva, false);
                                 break;
                             }
+                        //收到心跳信息
                         case '\u0002':
                             {
                                 int id = -1;
@@ -422,7 +423,9 @@ namespace UVA
                                         y = string.Format("{0}_{1}_{2}", bmanager.uvaMsg.lonDeg, bmanager.uvaMsg.lonMin, bmanager.uvaMsg.lonSec);
                                         heartTime = string.Format("{0}_{1}_{2}", bmanager.uvaMsg.hour, bmanager.uvaMsg.minute, bmanager.uvaMsg.second);
                                         UvaEntity tmpUVA = allUVA[id] as UvaEntity;
-                                        tmpUVA.receiveHeartAsync(x, y, heartTime);
+                                        //tmpUVA.receiveHeartAsync(x, y, heartTime);
+                                        byte[] sendBytes = Command.HeratResponse();
+                                        dispatch.Send(sendBytes, sendBytes.Length);
 
                                     }
                                     catch (Exception e)
