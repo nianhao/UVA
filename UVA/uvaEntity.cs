@@ -343,7 +343,7 @@ namespace UVA
 
                 // Sends a message to the host to which you have connected.
                 //Byte[] sendBytes = Encoding.UTF8.GetBytes(Command.READY_COMMAND(this.videoIp,this.videoPort.ToString()));
-                Byte[] sendBytes = Command.HeratResponse();
+                Byte[] sendBytes = Command.HeratResponse(this);
                 tmpUdpClient.Send(sendBytes, sendBytes.Length);
             }
             catch (Exception e)
