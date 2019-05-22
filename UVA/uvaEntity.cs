@@ -294,7 +294,7 @@ namespace UVA
             this.videoIp = videoIp;
             this.videoPort = videoPort;
             this.RemoteIpPoint = ippoint;
-            this.bandWidth = 4;
+            this.bandWidth = 2000000;
         }
         public void setVLCPlayer()
         {
@@ -384,7 +384,7 @@ namespace UVA
         public void sendClose()
         {
             //throw new NotImplementedException();
-            UdpClient tmpUdpClient = new UdpClient();
+            //UdpClient tmpUdpClient = new UdpClient();
             try
             {
 
@@ -395,6 +395,25 @@ namespace UVA
                 //Byte[] sendBytes = Command.Close();
                 //tmpUdpClient.Send(sendBytes, sendBytes.Length, this.RemoteIpPoint);
                 bandWidth = -1;
+            }
+            catch (Exception e)
+            {
+
+                Trace.WriteLine(e.StackTrace);
+            }
+        }
+        public void setBandWidth(int bandWidth)
+        {
+            try
+            {
+
+                // tmpUdpClient.Connect(this.ip, this.port);
+
+                // Sends a message to the host to which you have connected.
+                //Byte[] sendBytes = Encoding.UTF8.GetBytes(Command.READY_COMMAND(this.videoIp,this.videoPort.ToString()));
+                //Byte[] sendBytes = Command.Close();
+                //tmpUdpClient.Send(sendBytes, sendBytes.Length, this.RemoteIpPoint);
+                this.bandWidth = bandWidth;
             }
             catch (Exception e)
             {

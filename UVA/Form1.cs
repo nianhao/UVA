@@ -697,5 +697,75 @@ namespace UVA
         {
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (comboBox_allUVA.Text == "") return;
+            foreach (DictionaryEntry dtmpUVA in allUVA)
+            {
+                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
+                if (comboBox_allUVA.Text == tmpUVA.uvaName)
+                {
+                    tmpUVA.setBandWidth(40000);
+                    break;
+                }
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (comboBox_allUVA.Text == "") return;
+            foreach (DictionaryEntry dtmpUVA in allUVA)
+            {
+                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
+                if (comboBox_allUVA.Text == tmpUVA.uvaName)
+                {
+                    tmpUVA.setBandWidth(100000);
+                    break;
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (comboBox_allUVA.Text == "") return;
+            foreach (DictionaryEntry dtmpUVA in allUVA)
+            {
+                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
+                if (comboBox_allUVA.Text == tmpUVA.uvaName)
+                {
+                    tmpUVA.setBandWidth(800000);
+                    break;
+                }
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (comboBox_allUVA.Text == "") return;
+            foreach (DictionaryEntry dtmpUVA in allUVA)
+            {
+                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
+                if (comboBox_allUVA.Text == tmpUVA.uvaName)
+                {
+                    tmpUVA.setBandWidth(2000000);
+                    break;
+                }
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (comboBox_allUVA.Text == "") return;
+            foreach (DictionaryEntry dtmpUVA in allUVA)
+            {
+                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
+                if (comboBox_allUVA.Text == tmpUVA.uvaName)
+                {
+                    tmpUVA.setBandWidth(6000000);
+                    break;
+                }
+            }
+        }
     }
 }

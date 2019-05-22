@@ -99,6 +99,7 @@
       <DependentUpon>SysSetting.cs</DependentUpon>
     </Compile>
     <Compile Include="test.cs" />
+    <Compile Include="linkInfoManager.cs" />
     <Compile Include="UvaEntity.cs" />
     <Compile Include="VideoSegment.cs" />
     <Compile Include="VLCBase.cs" />

@@ -23,7 +23,7 @@ namespace UVA
             public int bandWidth;
         }
         /// <summary>
-        /// 以及启用
+        /// 已经弃用
         /// </summary>
         public static string READY_COMMAND(string ip, string port)
         {
