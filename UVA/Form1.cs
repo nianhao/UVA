@@ -80,7 +80,9 @@ namespace UVA
         {
             InitializeComponent();
             InitSys();
-            
+            //设置按钮的颜色
+            this.button4.ForeColor = Control.DefaultForeColor;
+            this.button4.BackColor = Control.DefaultBackColor;
             //test.test_copy();
         }
         /// <summary>
@@ -697,9 +699,24 @@ namespace UVA
         {
 
         }
-
+        private void clearButtonColor()
+        {
+            this.button1.ForeColor = Control.DefaultForeColor;
+            this.button1.BackColor = Control.DefaultBackColor;
+            this.button2.ForeColor = Control.DefaultForeColor;
+            this.button2.BackColor = Control.DefaultBackColor;
+            this.button3.ForeColor = Control.DefaultForeColor;
+            this.button3.BackColor = Control.DefaultBackColor;
+            this.button4.ForeColor = Control.DefaultForeColor;
+            this.button4.BackColor = Control.DefaultBackColor;
+            this.button5.ForeColor = Control.DefaultForeColor;
+            this.button5.BackColor = Control.DefaultBackColor;
+        }
         private void button1_Click(object sender, EventArgs e)
         {
+            clearButtonColor();
+            this.button1.ForeColor = Color.Red;
+            this.button1.BackColor = Color.Yellow;
             if (comboBox_allUVA.Text == "") return;
             foreach (DictionaryEntry dtmpUVA in allUVA)
             {
@@ -714,6 +731,9 @@ namespace UVA
 
         private void button3_Click(object sender, EventArgs e)
         {
+            clearButtonColor();
+            this.button3.ForeColor = Color.Red;
+            this.button3.BackColor = Color.Yellow;
             if (comboBox_allUVA.Text == "") return;
             foreach (DictionaryEntry dtmpUVA in allUVA)
             {
@@ -728,6 +748,9 @@ namespace UVA
 
         private void button2_Click(object sender, EventArgs e)
         {
+            clearButtonColor();
+            this.button2.ForeColor = Color.Red;
+            this.button2.BackColor = Color.Yellow;
             if (comboBox_allUVA.Text == "") return;
             foreach (DictionaryEntry dtmpUVA in allUVA)
             {
@@ -742,6 +765,9 @@ namespace UVA
 
         private void button4_Click(object sender, EventArgs e)
         {
+            clearButtonColor();
+            this.button4.ForeColor = Color.Red;
+            this.button4.BackColor = Color.Yellow;
             if (comboBox_allUVA.Text == "") return;
             foreach (DictionaryEntry dtmpUVA in allUVA)
             {
@@ -756,6 +782,9 @@ namespace UVA
 
         private void button5_Click(object sender, EventArgs e)
         {
+            clearButtonColor();
+            this.button5.ForeColor = Color.Red;
+            this.button5.BackColor = Color.Yellow;
             if (comboBox_allUVA.Text == "") return;
             foreach (DictionaryEntry dtmpUVA in allUVA)
             {
