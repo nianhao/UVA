@@ -40,7 +40,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.serviceController1 = new System.ServiceProcess.ServiceController();
             this.panel_VLCPlayer = new System.Windows.Forms.Panel();
-            this.trackBar2 = new System.Windows.Forms.TrackBar();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
@@ -58,8 +57,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
+            this.buttonshowLinkInfo = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -155,16 +154,6 @@
             this.panel_VLCPlayer.Name = "panel_VLCPlayer";
             this.panel_VLCPlayer.Size = new System.Drawing.Size(701, 504);
             this.panel_VLCPlayer.TabIndex = 6;
-            // 
-            // trackBar2
-            // 
-            this.trackBar2.Location = new System.Drawing.Point(305, 657);
-            this.trackBar2.Maximum = 100;
-            this.trackBar2.Name = "trackBar2";
-            this.trackBar2.Size = new System.Drawing.Size(233, 45);
-            this.trackBar2.TabIndex = 13;
-            this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
-            this.trackBar2.ValueChanged += new System.EventHandler(this.trackBar2_ValueChanged);
             // 
             // label2
             // 
@@ -329,11 +318,22 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
+            // buttonshowLinkInfo
+            // 
+            this.buttonshowLinkInfo.Location = new System.Drawing.Point(322, 655);
+            this.buttonshowLinkInfo.Name = "buttonshowLinkInfo";
+            this.buttonshowLinkInfo.Size = new System.Drawing.Size(75, 23);
+            this.buttonshowLinkInfo.TabIndex = 34;
+            this.buttonshowLinkInfo.Text = "查看链路状态";
+            this.buttonshowLinkInfo.UseVisualStyleBackColor = true;
+            this.buttonshowLinkInfo.Click += new System.EventHandler(this.buttonshowLinkInfo_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1233, 822);
+            this.Controls.Add(this.buttonshowLinkInfo);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
@@ -352,7 +352,6 @@
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.trackBar2);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label_uvaNum);
             this.Controls.Add(this.label1);
@@ -364,7 +363,6 @@
             this.Text = "无人机通信系统";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -385,7 +383,6 @@
         private System.Windows.Forms.Label label3;
         private System.ServiceProcess.ServiceController serviceController1;
         private System.Windows.Forms.Panel panel_VLCPlayer;
-        private System.Windows.Forms.TrackBar trackBar2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
@@ -403,6 +400,7 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button buttonshowLinkInfo;
     }
 }
 

@@ -80,8 +80,7 @@ namespace UVA
         {
             InitializeComponent();
             InitSys();
-            //设置按钮的颜色
-            this.button4.ForeColor = Control.DefaultForeColor;
+            //设置按钮的颜色          this.button4.ForeColor = Control.DefaultForeColor;
             this.button4.BackColor = Control.DefaultBackColor;
             //test.test_copy();
         }
@@ -795,6 +794,12 @@ namespace UVA
                     break;
                 }
             }
+        }
+
+        private void buttonshowLinkInfo_Click(object sender, EventArgs e)
+        {
+            linkInfo linkInfoBoard = new linkInfo();
+            linkInfoBoard.Show();
         }
     }
 }
