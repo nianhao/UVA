@@ -65,7 +65,7 @@ namespace UVA
             InitializeComponent();
             firstLoad = true;
             windowResized = false;
-
+            this.ShowInTaskbar = false; //不显示在系统任务栏
             //drawPoint();
         }
 
@@ -500,6 +500,12 @@ namespace UVA
             labelTips.Location = new Point(Convert.ToInt32((5 / 12.0) * windowWidth), 0);
 
         }
-    
+
+        private void LinkInfo_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            this.WindowState = FormWindowState.Minimized;
+            
+        }
     }
 }

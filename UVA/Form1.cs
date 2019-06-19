@@ -74,6 +74,10 @@ namespace UVA
         /// </summary>
         public Hashtable panel_UVA = Hashtable.Synchronized(new Hashtable());
         /// <summary>
+        /// 展示链路状态的类实例
+        /// </summary>
+        public linkInfo linkInfoBoard = new linkInfo();
+        /// <summary>
         /// 构造函数
         /// </summary>
         public Form1()
@@ -798,8 +802,22 @@ namespace UVA
 
         private void buttonshowLinkInfo_Click(object sender, EventArgs e)
         {
-            linkInfo linkInfoBoard = new linkInfo();
-            linkInfoBoard.Show();
+
+            try
+            {
+                if(linkInfoBoard.WindowState==FormWindowState.Minimized)
+                {
+                    linkInfoBoard.WindowState = FormWindowState.Normal;
+                }
+                linkInfoBoard.Show();
+            }
+            catch (Exception ee)
+            {
+                Trace.WriteLine(ee.Message);
+                Trace.WriteLine(ee.StackTrace);
+                
+            }
+            
         }
     }
 }

@@ -34,21 +34,24 @@
             // labelTips
             // 
             this.labelTips.AutoSize = true;
-            this.labelTips.Location = new System.Drawing.Point(353, 25);
+            this.labelTips.Location = new System.Drawing.Point(471, 31);
+            this.labelTips.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelTips.Name = "labelTips";
-            this.labelTips.Size = new System.Drawing.Size(0, 12);
+            this.labelTips.Size = new System.Drawing.Size(0, 15);
             this.labelTips.TabIndex = 0;
             this.labelTips.SizeChanged += new System.EventHandler(this.linkInfo_SizeChanged);
             this.labelTips.MouseDown += new System.Windows.Forms.MouseEventHandler(this.linkInfo_MouseDown);
             // 
             // linkInfo
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1067, 562);
             this.Controls.Add(this.labelTips);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "linkInfo";
             this.Text = "链路信息";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LinkInfo_FormClosing);
             this.SizeChanged += new System.EventHandler(this.linkInfo_SizeChanged);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.linkInfo_MouseDown);
             this.ResumeLayout(false);
