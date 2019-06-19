@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +31,7 @@ namespace UVA
         /// <summary>
         /// 视频接收服务器的IP地址
         /// </summary>
-        public static string RECEIVE_VIDEO_SERVER = "0.0.0.0";
+        public static string RECEIVE_VIDEO_SERVER = "58.87.106.50";
         //设置分配端口的最大重试次数
         /// <summary>
         /// 视频接收服务器，最大创建重试次数
@@ -50,7 +50,7 @@ namespace UVA
         /// <summary>
         /// 视频保存路径
         /// </summary>
-        public static String videoSavePath = "e:\\";
+        public static String videoSavePath = "c:\\";
         public static string PLUGINPATH = "";
         /// <summary>
         /// 生成文件签名
@@ -73,6 +73,26 @@ namespace UVA
         /// 接收到的消息来源
         /// </summary>
         public  enum msgFromType {uva, helmet };
+        /// <summary>
+        /// 配置发送出去的命令对应的表示
+        /// </summary>
         public static char DuplicatedeDisconnect = '\u0003';
+        public static char cmdTypeREADY = '\u0001';
+        public static char cmdTypeHEART = '\u0002';
+        public static char cmdTypeERROR = '\u0003';
+        public static char cmdTypeOK = '\u0004';
+        public static char cmdTypeCLOSE = '\u0005';
+        /// <summary>
+        /// 配置无人机发送的，我们接收到的命令表示
+        /// </summary>
+        public static char recTypeBEGIN = '\u0001';
+        public static char recTypeHEART = '\u0002';
+        public static char recTypeEND = '\u0003';
+        public static char recTypeOK = '\u0004';
+        //public static char cmdTypeCLOSE = '\u0005';
+        /// <summary>
+        /// VLC监听的地址
+        /// </summary>
+        public static string SERVERIP = "172.21.0.2";
     }
 }

@@ -22,18 +22,28 @@ namespace UVA
             public char errorType;
             public int bandWidth;
         }
+        /// <summary>
+        /// 已经弃用
+        /// </summary>
         public static string READY_COMMAND(string ip, string port)
         {
-           string command = string.Format( "ready;{0};{1}",ip,port);
+            string command = string.Format("ready;{0};{1}", ip, port);
             return command;
         }
-        public static Byte [] HeratResponse()
+        /// <summary>
+        /// 生成心跳响应的信息
+        /// </summary>
+        public static Byte[] HeratResponse(UvaEntity uvaT)
         {
             UVA_RESPONSE repMsg = new UVA_RESPONSE();
             repMsg.sendType = '\u0002';
+            repMsg.bandWidth = uvaT.bandWidth;
             return StructToBytes(repMsg);
         }
-        public static Byte [] Ready(string ip,int port)
+        /// <summary>
+        /// 生成ready的信息
+        /// </summary>
+        public static Byte[] Ready(string ip, int port)
         {
             string[] ips = ip.Split('.');
             int ipFirst = Convert.ToInt32(ips[0]);
@@ -42,7 +52,7 @@ namespace UVA
             int ipFourth = Convert.ToInt32(ips[3]);
 
             UVA_RESPONSE repMsg = new UVA_RESPONSE();
-            repMsg.sendType = '\u0001';
+            repMsg.sendType = Global.cmdTypeREADY;
             repMsg.IPFirst = ipFirst;
             repMsg.IPSecond = ipSecond;
             repMsg.IPThird = ipThird;
@@ -54,14 +64,27 @@ namespace UVA
         /// 生成重复连接错误的报文字节码
         /// </summary>
         /// <returns>Byte[] struct UVA_RESPONSE转换出的字节码</returns>
-        public static Byte [] DuplicateConnection()
+        public static Byte [] DuplicateConnection(string ip, int port)
         {
             UVA_RESPONSE repMsg = new UVA_RESPONSE();
             //'\u0003':error
             //'\u0001':DuplicateConnection
             //更多错误消息的定义，请查看通信协议
-            repMsg.sendType = '\u0003';
+            repMsg.sendType = Global.cmdTypeERROR;
             repMsg.errorType = '\u0001';
+            string[] ips = ip.Split('.');
+            int ipFirst = Convert.ToInt32(ips[0]);
+            int ipSecond = Convert.ToInt32(ips[1]);
+            int ipThird = Convert.ToInt32(ips[2]);
+            int ipFourth = Convert.ToInt32(ips[3]);
+
+           // UVA_RESPONSE repMsg = new UVA_RESPONSE();
+           // repMsg.sendType = '\u0001';
+            repMsg.IPFirst = ipFirst;
+            repMsg.IPSecond = ipSecond;
+            repMsg.IPThird = ipThird;
+            repMsg.IPFourth = ipFourth;
+            repMsg.Port = port;
             return StructToBytes(repMsg);
         }
         /// <summary>
@@ -74,7 +97,7 @@ namespace UVA
             //'\u0003':error
             //'\u0001':DuplicateConnection
             //更多错误消息的定义，请查看通信协议
-            repMsg.sendType = '\u0003';
+            repMsg.sendType = Global.cmdTypeERROR;
             repMsg.errorType = '\u0003';
             return StructToBytes(repMsg);
         }
@@ -88,7 +111,7 @@ namespace UVA
             //'\u0003':error
             //'\u0001':DuplicateConnection
             //更多错误消息的定义，请查看通信协议
-            repMsg.sendType = '\u0003';
+            repMsg.sendType = Global.cmdTypeERROR;
             repMsg.errorType = errorType;
             return StructToBytes(repMsg);
         }
@@ -140,6 +163,21 @@ namespace UVA
             Marshal.FreeHGlobal(structPtr);
             //返回结构体
             return obj;
+        }
+        /// <summary>
+        /// 生成close命令
+        /// </summary>
+        /// <returns></returns>
+        public static byte[] Close()
+        {
+            //throw new NotImplementedException();
+            UVA_RESPONSE repMsg = new UVA_RESPONSE();
+            //'\u0003':error
+            //'\u0001':DuplicateConnection
+            //更多错误消息的定义，请查看通信协议
+            repMsg.sendType = Global.cmdTypeCLOSE;
+            //repMsg.errorType = errorType;
+            return StructToBytes(repMsg);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using AxWMPLib;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -81,7 +80,8 @@ namespace UVA
         {
             InitializeComponent();
             InitSys();
-            startListenUVAConnection();
+            //设置按钮的颜色          this.button4.ForeColor = Control.DefaultForeColor;
+            this.button4.BackColor = Control.DefaultBackColor;
             //test.test_copy();
         }
         /// <summary>
@@ -143,6 +143,7 @@ namespace UVA
                 //绑定窗体并播放
                 newUVA.setRenderWindow(allPanel, panel_UVA);
                 newUVA.vlcPlayer.Play();
+                //发送ready信息 
                 newUVA.sendReady();
                 this.comboBox_allUVA.SelectedIndex = this.comboBox_allUVA.FindString(uvaName);
             }
@@ -156,8 +157,13 @@ namespace UVA
                 panel_UVA.Remove(newUVA.panelName);
                 //更改界面信息
                 string uvaName = newUVA.uvaName;
-                this.comboBox_allUVA.Items.Remove(uvaName);
+                this.comboBox_allUVA.Items.Remove(uvaName);          
                 int uvaNum = allUVA.Count;
+                //如果删除了最后一条项目，则清除一下combbox
+                if(uvaNum==0)
+                {
+                    this.comboBox_allUVA.Text = "";
+                }
                 this.label_uvaNum.Text = Convert.ToString(uvaNum);
                 //检查panel是否需要更换
                 if(Global.MAIN_PANEL==newUVA.panelName)
@@ -222,7 +228,9 @@ namespace UVA
             //throw new NotImplementedException();
             UdpClient dispatch = obj as UdpClient;
             BytesManager bmanager = null;
-            
+#if DEBUG
+            textBox_sysLog.Invoke(setSysLogCallBack, "启动成功");
+#endif            
             while (true)
             {
                 //阻塞，只到接收到消息
@@ -268,7 +276,8 @@ namespace UVA
                                 {
                                     string sendString = "error;DuplicateConnection;";
                                     //Byte[] sendBytes = Encoding.UTF8.GetBytes(sendString);
-                                    Byte[] sendBytes = Command.DuplicateConnection();
+                                    UvaEntity tmpUva = allUVA[uvaId] as UvaEntity;
+                                    Byte[] sendBytes = Command.DuplicateConnection(tmpUva.videoIp,tmpUva.videoPort);
                                     try
                                     {
                                         dispatch.Send(sendBytes, sendBytes.Length, RemoteIpEndPoint);
@@ -317,10 +326,10 @@ namespace UVA
                                     try
                                     {
                                         //分配端口成功，开启新的线程，接收视频信息
-                                        UdpClient videoReceiveUDPClient = new UdpClient(new IPEndPoint(IPAddress.Parse(video_receive_ip), RandKey));
+                                        UdpClient videoReceiveUDPClient = new UdpClient(new IPEndPoint(IPAddress.Parse("0.0.0.0"), RandKey));
                                         videoReceiveUDPClient.Close();
                                         //记录无人机
-                                        UvaEntity tmpUVA = new UvaEntity(RemoteIpEndPoint.Address.ToString(), RemoteIpEndPoint.Port, bmanager.uvaMsg.cliNum, video_receive_ip, RandKey);
+                                        UvaEntity tmpUVA = new UvaEntity(RemoteIpEndPoint.Address.ToString(), RemoteIpEndPoint.Port, bmanager.uvaMsg.cliNum, video_receive_ip, RandKey,RemoteIpEndPoint);
                                         allUVA.Add(uvaId, tmpUVA);
                                         //开启UDP视频接收线程
                                         //videoReceiveThread = new Thread(new ParameterizedThreadStart(videoReceiveLoop));
@@ -337,15 +346,23 @@ namespace UVA
                                     catch (Exception e)
                                     {
                                         Trace.WriteLine(e.StackTrace);
+                                        textBox_sysLog.Invoke(setSysLogCallBack, e.StackTrace.ToString());
+                                        textBox_sysLog.Invoke(setSysLogCallBack, e.Message.ToString());
                                     }
                                 }
                                 break;
                             }
 
                         case '\u0003':
+                        case '\u0004':
                             {
+#if DEBUG
+                                textBox_sysLog.Invoke(setSysLogCallBack, string.Format("接收到{0}信息",bmanager.uvaMsg.sendType=='\u0003'?"end":"ok"));
+#endif
                                 //获取无人机id
-                                int uvaId = Convert.ToInt32(commands[2]);
+                                //int uvaId = Convert.ToInt32(commands[2]);
+                                //获取无人机id
+                                int uvaId = bmanager.uvaMsg.cliNum;
                                 //检查是否重复注销
                                 if (!allUVA.ContainsKey(uvaId))
                                 {
@@ -375,6 +392,7 @@ namespace UVA
                                 comboBox_allUVA.Invoke(modifyUVACallBack, tmpUva, false);
                                 break;
                             }
+                        //收到心跳信息
                         case '\u0002':
                             {
                                 int id = -1;
@@ -406,7 +424,9 @@ namespace UVA
                                         y = string.Format("{0}_{1}_{2}", bmanager.uvaMsg.lonDeg, bmanager.uvaMsg.lonMin, bmanager.uvaMsg.lonSec);
                                         heartTime = string.Format("{0}_{1}_{2}", bmanager.uvaMsg.hour, bmanager.uvaMsg.minute, bmanager.uvaMsg.second);
                                         UvaEntity tmpUVA = allUVA[id] as UvaEntity;
-                                        tmpUVA.receiveHeartAsync(x, y, heartTime);
+                                        //tmpUVA.receiveHeartAsync(x, y, heartTime);
+                                        byte[] sendBytes = Command.HeratResponse(tmpUVA);
+                                        dispatch.Send(sendBytes, sendBytes.Length,RemoteIpEndPoint);
 
                                     }
                                     catch (Exception e)
@@ -645,6 +665,141 @@ namespace UVA
         private void trackBar2_ValueChanged(object sender, EventArgs e)
         {
 
+        }
+        /// <summary>
+        /// 发送close命令，主动断开连接
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_close_Click(object sender, EventArgs e)
+        {
+            if (comboBox_allUVA.Text == "") return;
+            foreach(DictionaryEntry dtmpUVA in allUVA)
+            {
+                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
+                if(comboBox_allUVA.Text==tmpUVA.uvaName)
+                {
+                    tmpUVA.sendClose();
+                    break;
+                }
+            }
+        }
+        /// <summary>
+        /// 开始监听
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_start_Click(object sender, EventArgs e)
+        {
+            startListenUVAConnection();
+        }
+
+        private void button_stop_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void clearButtonColor()
+        {
+            this.button1.ForeColor = Control.DefaultForeColor;
+            this.button1.BackColor = Control.DefaultBackColor;
+            this.button2.ForeColor = Control.DefaultForeColor;
+            this.button2.BackColor = Control.DefaultBackColor;
+            this.button3.ForeColor = Control.DefaultForeColor;
+            this.button3.BackColor = Control.DefaultBackColor;
+            this.button4.ForeColor = Control.DefaultForeColor;
+            this.button4.BackColor = Control.DefaultBackColor;
+            this.button5.ForeColor = Control.DefaultForeColor;
+            this.button5.BackColor = Control.DefaultBackColor;
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            clearButtonColor();
+            this.button1.ForeColor = Color.Red;
+            this.button1.BackColor = Color.Yellow;
+            if (comboBox_allUVA.Text == "") return;
+            foreach (DictionaryEntry dtmpUVA in allUVA)
+            {
+                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
+                if (comboBox_allUVA.Text == tmpUVA.uvaName)
+                {
+                    tmpUVA.setBandWidth(40000);
+                    break;
+                }
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            clearButtonColor();
+            this.button3.ForeColor = Color.Red;
+            this.button3.BackColor = Color.Yellow;
+            if (comboBox_allUVA.Text == "") return;
+            foreach (DictionaryEntry dtmpUVA in allUVA)
+            {
+                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
+                if (comboBox_allUVA.Text == tmpUVA.uvaName)
+                {
+                    tmpUVA.setBandWidth(100000);
+                    break;
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            clearButtonColor();
+            this.button2.ForeColor = Color.Red;
+            this.button2.BackColor = Color.Yellow;
+            if (comboBox_allUVA.Text == "") return;
+            foreach (DictionaryEntry dtmpUVA in allUVA)
+            {
+                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
+                if (comboBox_allUVA.Text == tmpUVA.uvaName)
+                {
+                    tmpUVA.setBandWidth(800000);
+                    break;
+                }
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            clearButtonColor();
+            this.button4.ForeColor = Color.Red;
+            this.button4.BackColor = Color.Yellow;
+            if (comboBox_allUVA.Text == "") return;
+            foreach (DictionaryEntry dtmpUVA in allUVA)
+            {
+                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
+                if (comboBox_allUVA.Text == tmpUVA.uvaName)
+                {
+                    tmpUVA.setBandWidth(2000000);
+                    break;
+                }
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            clearButtonColor();
+            this.button5.ForeColor = Color.Red;
+            this.button5.BackColor = Color.Yellow;
+            if (comboBox_allUVA.Text == "") return;
+            foreach (DictionaryEntry dtmpUVA in allUVA)
+            {
+                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
+                if (comboBox_allUVA.Text == tmpUVA.uvaName)
+                {
+                    tmpUVA.setBandWidth(6000000);
+                    break;
+                }
+            }
+        }
+
+        private void buttonshowLinkInfo_Click(object sender, EventArgs e)
+        {
+            linkInfo linkInfoBoard = new linkInfo();
+            linkInfoBoard.Show();
         }
     }
 }

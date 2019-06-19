@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
@@ -160,6 +161,9 @@ namespace UVA
         /// 无人机播放视频的panel
         /// </summary>
         public string panelName { get; set; }
+        public IPEndPoint RemoteIpPoint { get; private set; }
+        public int bandWidth { get; private set; }
+
         /// <summary>
         /// 无人机下线
         /// </summary>
@@ -242,6 +246,7 @@ namespace UVA
             //设置视频接收地址
             this.videoIp = videoIp;
             this.videoPort = videoPort;
+            this.bandWidth = 4;
         }
         //构造函数
         /// <summary>
@@ -262,11 +267,39 @@ namespace UVA
             //设置视频接收地址
             this.videoIp = videoIp;
             this.videoPort = videoPort;
+            this.bandWidth = 4;
+        }
+        /// <summary>
+        /// 构造方法，将远端的ippoint传入
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="port"></param>
+        /// <param name="id"></param>
+        /// <param name="videoIp"></param>
+        /// <param name="videoPort"></param>
+        /// <param name="ippoint"></param>
+        public UvaEntity(string ip, int port, int id, string videoIp, int videoPort,IPEndPoint ippoint)
+        {
+            this.ip = ip;
+            this.port = port;
+            this.id = id;
+            // this.videoReceiveClient = videoReceiveClient;
+            this.loginTime = DateTime.Now.ToLocalTime().ToString();
+            this.uvaName = string.Format("{0}号无人机", id);
+            //实例化队列 不自己缓存视频，所以不用实例化缓存队列
+            //tmpVideQueue1 = new ConcurrentQueue<Byte []> ();
+            //tmpVideQueue2 = new ConcurrentQueue<Byte[]>();
+            //fileIsWriting = false;
+            //设置视频接收地址
+            this.videoIp = videoIp;
+            this.videoPort = videoPort;
+            this.RemoteIpPoint = ippoint;
+            this.bandWidth = 2000000;
         }
         public void setVLCPlayer()
         {
             //构造无人机视频传输地址
-            string videoURL = string.Format("udp://@{0}:{1}", this.videoIp, this.videoPort);
+            string videoURL = string.Format("udp://@{0}:{1}", Global.SERVERIP, this.videoPort);
             //实例化一个播放器
             string pluginpath = Environment.CurrentDirectory + "\\plugins\\";
             //获取文件写入名
@@ -283,13 +316,13 @@ namespace UVA
             UdpClient tmpUdpClient = new UdpClient();
             try
             {
-                
-                tmpUdpClient.Connect(this.ip, this.port);
+
+// tmpUdpClient.Connect(this.ip, this.port);
 
                 // Sends a message to the host to which you have connected.
                 //Byte[] sendBytes = Encoding.UTF8.GetBytes(Command.READY_COMMAND(this.videoIp,this.videoPort.ToString()));
                 Byte[] sendBytes = Command.Ready(this.videoIp, this.videoPort);
-                tmpUdpClient.Send(sendBytes, sendBytes.Length);
+                tmpUdpClient.Send(sendBytes, sendBytes.Length,this.RemoteIpPoint);
             }
             catch (Exception e)
             {
@@ -310,7 +343,7 @@ namespace UVA
 
                 // Sends a message to the host to which you have connected.
                 //Byte[] sendBytes = Encoding.UTF8.GetBytes(Command.READY_COMMAND(this.videoIp,this.videoPort.ToString()));
-                Byte[] sendBytes = Command.HeratResponse();
+                Byte[] sendBytes = Command.HeratResponse(this);
                 tmpUdpClient.Send(sendBytes, sendBytes.Length);
             }
             catch (Exception e)
@@ -344,6 +377,49 @@ namespace UVA
                 //throw;
             }
 
+        }
+        /// <summary>
+        /// 发送close命令
+        /// </summary>
+        public void sendClose()
+        {
+            //throw new NotImplementedException();
+            //UdpClient tmpUdpClient = new UdpClient();
+            try
+            {
+
+                // tmpUdpClient.Connect(this.ip, this.port);
+
+                // Sends a message to the host to which you have connected.
+                //Byte[] sendBytes = Encoding.UTF8.GetBytes(Command.READY_COMMAND(this.videoIp,this.videoPort.ToString()));
+                //Byte[] sendBytes = Command.Close();
+                //tmpUdpClient.Send(sendBytes, sendBytes.Length, this.RemoteIpPoint);
+                bandWidth = -1;
+            }
+            catch (Exception e)
+            {
+
+                Trace.WriteLine(e.StackTrace);
+            }
+        }
+        public void setBandWidth(int bandWidth)
+        {
+            try
+            {
+
+                // tmpUdpClient.Connect(this.ip, this.port);
+
+                // Sends a message to the host to which you have connected.
+                //Byte[] sendBytes = Encoding.UTF8.GetBytes(Command.READY_COMMAND(this.videoIp,this.videoPort.ToString()));
+                //Byte[] sendBytes = Command.Close();
+                //tmpUdpClient.Send(sendBytes, sendBytes.Length, this.RemoteIpPoint);
+                this.bandWidth = bandWidth;
+            }
+            catch (Exception e)
+            {
+
+                Trace.WriteLine(e.StackTrace);
+            }
         }
     }
 }
