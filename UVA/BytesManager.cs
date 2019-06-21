@@ -37,7 +37,57 @@ namespace UVA
         }
         public UVA_RECEIVE uvaMsg;
         public int msgForm = -1;
+        [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        public struct tlinkinfo_tband
+        {
+            Byte tkType;
+            UInt64 tkUsedband;
+            UInt64 tkMaxband;
+        }
+        [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        public struct clinkinfo_tband
+        {
+            Byte ckType;
+            UInt64 ckUsedband;
+            UInt64 ckMaxband;
+        }
+        [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        public struct tlinkinfo
+        {
+            UInt16 tag;
+            Int32 termIP;
+            Byte tkSection;
+            Byte tkMaxNum;
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.Struct)]
+            tlinkinfo_tband[] tkband;
 
+        }
+        public static tlinkinfo tlinkinfoInstance = new tlinkinfo();
+        [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        //注意这个属性不能少
+        public struct LINKINFO_RECEIVE_HEAD
+        {
+            public UInt16 tag;
+            public Byte CarID;
+            public Byte ckSection;
+            public Byte ckMaxNum;
+        }
+        public static LINKINFO_RECEIVE_HEAD lrh = new LINKINFO_RECEIVE_HEAD();
+        [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        public struct LINKINFO_RECEIVE
+        {
+            public UInt16 tag;
+            public Byte CarID;
+            public Byte ckSection;
+            public Byte ckMaxNum;
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.Struct)]
+            public clinkinfo_tband[] ckband;
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 1, ArraySubType = UnmanagedType.Struct)]
+            public tlinkinfo[] ttlinkinfo;
+
+        }
+        public static LINKINFO_RECEIVE lr = new LINKINFO_RECEIVE();
+        public LINKINFO_RECEIVE linkInfo = new LINKINFO_RECEIVE();
         public BytesManager(byte [] message)
         {
             switch(message[0])
@@ -51,6 +101,10 @@ namespace UVA
                     msgForm = (int)Global.msgFromType.uva;
                     uvaMsg = (UVA_RECEIVE)BytesToStuct(message, m.GetType());
                     //Console.WriteLine("s");
+                    break;
+                case 38:
+              
+                    linkInfo = (LINKINFO_RECEIVE)BytesToStuct(message, linkInfo.GetType());
                     break;
                 default:
                     break;
