@@ -38,6 +38,20 @@ namespace UVA
             UVA_RESPONSE repMsg = new UVA_RESPONSE();
             repMsg.sendType = '\u0002';
             repMsg.bandWidth = uvaT.bandWidth;
+
+            //把ip和端口补充上
+            string[] ips = uvaT.videoIp.Split('.');
+            int ipFirst = Convert.ToInt32(ips[0]);
+            int ipSecond = Convert.ToInt32(ips[1]);
+            int ipThird = Convert.ToInt32(ips[2]);
+            int ipFourth = Convert.ToInt32(ips[3]);
+
+            repMsg.sendType = Global.cmdTypeREADY;
+            repMsg.IPFirst = ipFirst;
+            repMsg.IPSecond = ipSecond;
+            repMsg.IPThird = ipThird;
+            repMsg.IPFourth = ipFourth;
+            repMsg.Port = uvaT.videoPort;
             return StructToBytes(repMsg);
         }
         /// <summary>

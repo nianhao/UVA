@@ -128,7 +128,8 @@ namespace UVA
         public void setSysLog(String info)
         {
             String nowString= DateTime.Now.ToLocalTime().ToString();
-            textBox_sysLog.AppendText(nowString+"\r\n"+info+"\n");
+            textBox_sysLog.AppendText(nowString+"\r\n"+info+"\r\n");
+            //textBox_sysLog.AppendText( "\r\n");
         }
         /// <summary>
         /// 修改界面上，在线无人机的回调
@@ -260,7 +261,7 @@ namespace UVA
                 //输出debug信息
                 //Trace.WriteLine("接收到消息："+receiveData);
 #if DEBUG 
-                textBox_sysLog.Invoke(setSysLogCallBack,("接收到来自"+RemoteIpEndPoint.ToString()+"消息：" + receiveData));
+                textBox_sysLog.Invoke(setSysLogCallBack,("接收到来自"+RemoteIpEndPoint.ToString()+"消息：" + receiveBytes[0]+"···\r\t消息的长度为"+receiveBytes.Length));
 #endif
                 string[] commands = receiveData.Split(';');
                 if(bmanager.msgForm==(int)Global.msgFromType.uva|| bmanager.msgForm == (int)Global.msgFromType.helmet)
@@ -286,6 +287,7 @@ namespace UVA
                                     {
                                         dispatch.Send(sendBytes, sendBytes.Length, RemoteIpEndPoint);
                                         textBox_sysLog.Invoke(setSysLogCallBack, string.Format("向{0}:{1},{2}号无人机发送错误信息{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId, sendString));
+                                        Trace.WriteLine( string.Format("向{0}:{1},{2}号无人机发送错误信息{3}", RemoteIpEndPoint.Address, RemoteIpEndPoint.Port, uvaId, sendString));
 
                                     }
                                     catch (Exception e)
@@ -399,6 +401,10 @@ namespace UVA
                         //收到心跳信息
                         case '\u0002':
                             {
+#if DEBUG
+                                textBox_sysLog.Invoke(setSysLogCallBack, string.Format("解析为心跳命令"));
+#endif
+
                                 int id = -1;
                                 string type = null;
                                 string info = null;
@@ -408,7 +414,7 @@ namespace UVA
                                     //id = Convert.ToInt32(commands[2]);
                                     id = bmanager.uvaMsg.cliNum;
                                     //获取设备类型
-                                    type = bmanager.uvaMsg.cliType=='\u0001'?"uva": "helmet";
+                                    type = bmanager.uvaMsg.cliType=='\u0002'?"uva": "helmet";
                                     //type = commands[1];
                                     //info = commands[3];
                                     Trace.WriteLine("心跳命令解析完毕" + type + id.ToString() );
