@@ -60,6 +60,29 @@ namespace UVA
         /// 强调线的颜色
         /// </summary>
         private Color empColor = Color.Red;
+        /// <summary>
+        /// 存放ckband的信息 即car2Server的连线
+        /// </summary>
+        private ArrayList allCkband = new ArrayList();
+        /// <summary>
+        /// 存放无人机的链路信息
+        /// </summary>
+        private Hashtable allTlink = new Hashtable();
+        /// <summary>
+        /// 存放上次链路信息的无人机，用于
+        /// 展示无人机上下线
+        /// </summary>
+        private HashSet<string> lastAllTlinkIP = new HashSet<string> ();
+        /// <summary>
+        /// 从接收的消息中解析到的 车到服务器的链接数目
+        /// </summary>
+        int car2ServerNum;
+        /// <summary>
+        /// 从接收的消息中解析到的 uva的数目，每个uva有 tkBandNum = 2个链路
+        /// 考虑的程序的可用性，我们再绘制线的时候，只绘制一条链路
+        /// 该链路是带宽最大的链路
+        /// </summary>
+        int uvaNum;
         public linkInfo()
         {
             InitializeComponent();
@@ -188,7 +211,7 @@ namespace UVA
 
             if (firstLoad)
             {
-                labelTips.Text = "当前有无人机在线，单击无人机\n查看链路状态";
+                labelTips.Text = "未接收到链路信息，等待状态更新。。。";
                 labelTips.Visible = true;
                 var windowHeight = this.Size.Height;
                 var windowWidth = this.Size.Width;
@@ -197,13 +220,33 @@ namespace UVA
                 //清除之前绘制的内容
                 clearWindow(g);
                 //绘制新的内容
-                drawNew(g, windowHeight, windowWidth);
+                //drawNew(g, windowHeight, windowWidth);
+                //第一次加载，把车和服务器画上
+                windowResized = false;
+                //throw new NotImplementedException();
+                //计算车的绘制位置
+                var carPoint = calcCarPoint(windowHeight, windowWidth);
+                var carW = Convert.ToInt32(carRect[0] * windowWidth);
+                var carH = Convert.ToInt32(carRect[1] * windowHeight);
+                //将这个位置添加到记录中，用于下次绘制清除
+                var carR = new[] { carPoint.X, carPoint.Y, carW, carH };
+                itemsHaveDraw.Add(carR);
+                //计算server的绘制位置
+                var serverPoint = calcServerPoint(windowHeight, windowWidth);
+                var serverW = Convert.ToInt32(serverRect[0] * windowWidth);
+                var serverH = Convert.ToInt32(serverRect[1] * windowHeight);
+                //将服务器的位置添加到数组中
+                var serverR = new[] { serverPoint.X, serverPoint.Y, serverW, serverH };
+                itemsHaveDraw.Add(serverR);
+                //g.DrawImage(LinkInfoStatusBoard.Properties.Resources.uva, carPoint.X,carPoint.Y, windowHeight / 5, windowWidth / 6);
+                g.DrawImage(UVA.Properties.Resources.car, carPoint.X, carPoint.Y, carW, carH);
+                g.DrawImage(UVA.Properties.Resources.server, serverPoint.X, serverPoint.Y, serverW, serverH);
                 firstLoad = !firstLoad;
-                this.Width = this.Width - 1;
+                //this.Width = this.Width - 1;
             }
 
 
-        }
+       }
         /// <summary>
         /// 进行网络结构的绘制，这里要先绘制车，在绘制服务器。这样的话，后面连线，可以
         /// 从itemHavadraw中的 0 取出车的信息， 1 取出服务器的信息
@@ -238,52 +281,89 @@ namespace UVA
             drawNet(g);
         }
 
-        private void drawNet(Graphics g)
+        private void drawNet(Graphics g,int car2ServerNum=-1)
         {
-            if (linesHaveDraw.Count > 0)
-                linesHaveDraw.Clear();
-            //throw new NotImplementedException();
-            Point carCenter = calcCarCenter(itemsHaveDraw[0]);
-            Point serverCenter = calcServerCenter(itemsHaveDraw[1]);
-            for (int i = 2; i < itemsHaveDraw.Count; i++)
-            {
-                Pen mpen = new Pen(Color.Blue);
-                int[] uvaR = itemsHaveDraw[i] as int[];
-                Point uvaP = new Point(Convert.ToInt32(uvaR[0] + uvaR[2] * 0.5), Convert.ToInt32(uvaR[1] + uvaR[3] * 0.5));
-                Point[] line = new Point[] { uvaP, carCenter };
-                linesHaveDraw.Add(line);
-                g.DrawLine(mpen, uvaP.X, uvaP.Y, carCenter.X, carCenter.Y);
-            }
-            drawNetCar2Server(g, carCenter, serverCenter);
+                if (linesHaveDraw.Count > 0)
+                    linesHaveDraw.Clear();
+                //throw new NotImplementedException();
+                Point carCenter = calcCarCenter(itemsHaveDraw[0]);
+                Point serverCenter = calcServerCenter(itemsHaveDraw[1]);
+                //绘制无人机到车的连线
+                for (int i = 2; i < itemsHaveDraw.Count; i++)
+                {
+                    Pen mpen = new Pen(Color.Blue);
+                    int[] uvaR = itemsHaveDraw[i] as int[];
+                    Point uvaP = new Point(Convert.ToInt32(uvaR[0] + uvaR[2] * 0.5), Convert.ToInt32(uvaR[1] + uvaR[3] * 0.5));
+                    Point[] line = new Point[] { uvaP, carCenter };
+                    linesHaveDraw.Add(line);
+                    g.DrawLine(mpen, uvaP.X, uvaP.Y, carCenter.X, carCenter.Y);
+                }
+                drawNetCar2Server(g, carCenter, serverCenter,car2ServerNum);
+
         }
 
-        private void drawNetCar2Server(Graphics g, Point carCenter, Point serverCenter)
+        private void drawNetCar2Server(Graphics g, Point carCenter, Point serverCenter,int car2ServerNum=-1)
         {
             //throw new NotImplementedException();
 
             ArrayList serverPints = calcServerLinesPoint(serverCenter, 10);
             int uvaNum = itemsHaveDraw.Count - 2;
-            if (linesHaveDraw.Count > uvaNum)
+            //没有特殊说明从车到无人机的连线，则绘制等同于无人机的个数的连线
+            if (car2ServerNum==-1)
             {
-                for (int i = uvaNum; i < linesHaveDraw.Count; i++)
+                
+                //把上一次绘制的car2Server的线清理掉
+                //从linesHaveDraw[uvaNum:]存放的是这些线
+                if (linesHaveDraw.Count > uvaNum)
                 {
-                    linesHaveDraw.RemoveAt(i);
+                    for (int i = uvaNum; i < linesHaveDraw.Count; i++)
+                    {
+                        linesHaveDraw.RemoveAt(i);
+                    }
+                }
+                //如果没有在服务器上选择点，或者选择的点不等于uvaNum，则重新选择服务器上的点
+                if (serverPintsSelected.Count == 0 || serverPintsSelected.Count != uvaNum)
+                {
+                    serverPintsSelected.Clear();
+                    serverPintsSelected = Tool.randSelectIndex(maxShowNum, uvaNum);
+                }
+                //开始连线
+                foreach (int i in serverPintsSelected.Values)
+                {
+                    Point serverP = (Point)serverPints[i];
+                    Pen mpen = new Pen(Color.Blue);
+                    Point[] line = new Point[] { carCenter, serverP };
+                    linesHaveDraw.Add(line);
+                    g.DrawLine(mpen, carCenter.X, carCenter.Y, serverP.X, serverP.Y);
                 }
             }
-            if (serverPintsSelected.Count == 0 || serverPintsSelected.Count != uvaNum)
+            else
             {
-                serverPintsSelected.Clear();
-                serverPintsSelected = Tool.randSelectIndex(maxShowNum, uvaNum);
+                if (linesHaveDraw.Count > car2ServerNum)
+                {
+                    //去掉上次的连线，linesHaveDraw[uvaNum:]是车到服务器的连线
+                    for (int i = uvaNum; i < linesHaveDraw.Count; i++)
+                    {
+                        linesHaveDraw.RemoveAt(i);
+                    }
+                }
+                //如果没有在服务器上选择点，或者选择的点不等于uvaNum，则重新选择服务器上的点
+                if (serverPintsSelected.Count == 0 || serverPintsSelected.Count != car2ServerNum)
+                {
+                    serverPintsSelected.Clear();
+                    serverPintsSelected = Tool.randSelectIndex(maxShowNum, car2ServerNum);
+                }
+                //开始连线
+                foreach (int i in serverPintsSelected.Values)
+                {
+                    Point serverP = (Point)serverPints[i];
+                    Pen mpen = new Pen(Color.Blue);
+                    Point[] line = new Point[] { carCenter, serverP };
+                    linesHaveDraw.Add(line);
+                    g.DrawLine(mpen, carCenter.X, carCenter.Y, serverP.X, serverP.Y);
+                }
             }
 
-            foreach (int i in serverPintsSelected.Values)
-            {
-                Point serverP = (Point)serverPints[i];
-                Pen mpen = new Pen(Color.Blue);
-                Point[] line = new Point[] { carCenter, serverP };
-                linesHaveDraw.Add(line);
-                g.DrawLine(mpen, carCenter.X, carCenter.Y, serverP.X, serverP.Y);
-            }
         }
 
         /// <summary>
@@ -386,7 +466,7 @@ namespace UVA
 
         private void linkInfo_MouseDown(object sender, MouseEventArgs e)
         {
-            var windowHeight = this.Size.Height;
+            /*var windowHeight = this.Size.Height;
             var windowWidth = this.Size.Width;
             Point clickPosition = this.PointToClient(Control.MousePosition);
             int uvaNo = matchPosition2UvaNo(clickPosition);
@@ -402,7 +482,7 @@ namespace UVA
                 }
 
                 emphasizeLine(g, uvaNo);
-            }
+            }*/
 
         }
 
@@ -485,7 +565,7 @@ namespace UVA
             //清除之前绘制的内容
             clearWindow(g);
             //绘制新的内容
-            drawNew(g, windowHeight, windowWidth);
+            //drawNew(g, windowHeight, windowWidth);
             //labelTips
         }
         /// <summary>
@@ -506,6 +586,115 @@ namespace UVA
             e.Cancel = true;
             this.WindowState = FormWindowState.Minimized;
             
+        }
+
+        internal void setByLinkInfoMsg(BytesManager bmanager)
+        {
+            //throw new NotImplementedException();
+            //获取carId
+            int carId = bmanager.linkInfo.CarID;
+
+            windowResized = true;
+            //MessageBox.Show(this.Height.ToString()+" "+this.Width.ToString());
+            //Graphics g = this.CreateGraphics();
+            //Pen p = new Pen(Color.Red);
+            //g.DrawLine(p, 100, 100, 200, 200);
+            var windowHeight = this.Size.Height;
+            var windowWidth = this.Size.Width;
+            setControlPosition();
+            Graphics g = this.CreateGraphics();
+            //清除之前绘制的内容
+            clearWindow(g);
+            //设置car2Server的链路
+            car2ServerNum = setCar2ServerInfo(bmanager.linkInfo.ckband);
+            uvaNum = setUvaInfo(bmanager.linkInfo.ttlinkinfo);
+            //绘制新的内容
+            drawNew(g, windowHeight, windowWidth,car2ServerNum,uvaNum);
+        }
+
+        private void drawNew(Graphics g, int windowHeight, int windowWidth, int car2ServerNum, int uvaNum)
+        {
+            //throw new NotImplementedException();
+            windowResized = false;
+            //throw new NotImplementedException();
+            //计算车的绘制位置
+            var carPoint = calcCarPoint(windowHeight, windowWidth);
+            var carW = Convert.ToInt32(carRect[0] * windowWidth);
+            var carH = Convert.ToInt32(carRect[1] * windowHeight);
+            //将这个位置添加到记录中，用于下次绘制清除
+            var carR = new[] { carPoint.X, carPoint.Y, carW, carH };
+            itemsHaveDraw.Add(carR);
+            //计算server的绘制位置
+            var serverPoint = calcServerPoint(windowHeight, windowWidth);
+            var serverW = Convert.ToInt32(serverRect[0] * windowWidth);
+            var serverH = Convert.ToInt32(serverRect[1] * windowHeight);
+            //将服务器的位置添加到数组中
+            var serverR = new[] { serverPoint.X, serverPoint.Y, serverW, serverH };
+            itemsHaveDraw.Add(serverR);
+            //g.DrawImage(LinkInfoStatusBoard.Properties.Resources.uva, carPoint.X,carPoint.Y, windowHeight / 5, windowWidth / 6);
+            g.DrawImage(UVA.Properties.Resources.car, carPoint.X, carPoint.Y, carW, carH);
+            g.DrawImage(UVA.Properties.Resources.server, serverPoint.X, serverPoint.Y, serverW, serverH);
+            if(uvaNum>0)
+            {
+                //绘制无人机
+                drawUVA(g, windowHeight, windowWidth, uvaNum);
+            }
+            if(car2ServerNum>0)
+            {
+                //绘制连线
+                drawNet(g, car2ServerNum);
+            }
+
+        }
+        /// <summary>
+        /// 设置无人机的ip对应信息
+        /// 返回无人机的总个数
+        /// </summary>
+        /// <param name="ttlinkinfo"></param>
+        /// <returns></returns>
+        private int setUvaInfo(BytesManager.tlinkinfo[] ttlinkinfo)
+        {
+            //throw new NotImplementedException();
+            //把上次链路信息的无人机ip保存下来
+            lastAllTlinkIP.Clear();
+            foreach(string ip in allTlink.Keys)
+            {
+                lastAllTlinkIP.Add(ip);
+            }
+            //再做清空
+            allTlink.Clear();
+            int num = 0;
+            foreach(BytesManager.tlinkinfo tk in ttlinkinfo)
+            {
+                if(tk.ip1!=0)
+                {
+                    //ip不为空，则说明有一个无人机
+                    num++;
+                    //构造无人机的IP
+                    string ip = string.Format("{0}.{1}.{2}.{3}", tk.ip1, tk.ip2, tk.ip3, tk.ip4);
+                    //添加链路信息
+                    allTlink.Add(ip, tk.tkband);
+                }
+            }
+            return num;
+        }
+
+        private int setCar2ServerInfo(BytesManager.clinkinfo_tband[] ckband)
+        {
+            //先清空一次
+            allCkband.Clear();
+            //throw new NotImplementedException();
+            int num = 0;
+            foreach(BytesManager.clinkinfo_tband ct in ckband)
+            {
+                if(ct.ckType!=0)
+                {
+                    num++;
+                    allCkband.Add(ct);
+                    
+                }
+            }
+            return num;
         }
     }
 }

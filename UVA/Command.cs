@@ -36,6 +36,17 @@ namespace UVA
         public static Byte[] HeratResponse(UvaEntity uvaT)
         {
             UVA_RESPONSE repMsg = new UVA_RESPONSE();
+            string ip = Global.cpeIP;
+            string[] ips = ip.Split('.');
+            int ipFirst = Convert.ToInt32(ips[0]);
+            int ipSecond = Convert.ToInt32(ips[1]);
+            int ipThird = Convert.ToInt32(ips[2]);
+            int ipFourth = Convert.ToInt32(ips[3]);
+            repMsg.IPFirst = ipFirst;
+            repMsg.IPSecond = ipSecond;
+            repMsg.IPThird = ipThird;
+            repMsg.IPFourth = ipFourth;
+            repMsg.Port = uvaT.videoPort;
             repMsg.sendType = '\u0002';
             repMsg.bandWidth = uvaT.bandWidth;
             return StructToBytes(repMsg);

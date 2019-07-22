@@ -9,6 +9,9 @@ namespace UVA
     
     class BytesManager
     {
+        public const int tkBandNum = 2;
+        public const int ckBandNum = 2;
+        public const int tinfoNum = 1;
         //注意这个属性不能少
         [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
         public struct UVA_RECEIVE
@@ -40,26 +43,31 @@ namespace UVA
         [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
         public struct tlinkinfo_tband
         {
-            Byte tkType;
-            UInt64 tkUsedband;
-            UInt64 tkMaxband;
+            public Byte tkType;
+            public UInt64 tkUsedband;
+            public UInt64 tkMaxband;
         }
         [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
         public struct clinkinfo_tband
         {
-            Byte ckType;
-            UInt64 ckUsedband;
-            UInt64 ckMaxband;
+            public Byte ckType;
+            public UInt64 ckUsedband;
+            public UInt64 ckMaxband;
         }
         [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
         public struct tlinkinfo
         {
-            UInt16 tag;
-            Int32 termIP;
-            Byte tkSection;
-            Byte tkMaxNum;
-            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.Struct)]
-            tlinkinfo_tband[] tkband;
+            public UInt16 tag;
+
+            //Int32 termIP;
+            public Byte ip1;
+            public Byte ip2;
+            public Byte ip3;
+            public Byte ip4;
+            public Byte tkSection;
+            public Byte tkMaxNum;
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = tkBandNum, ArraySubType = UnmanagedType.Struct)]
+            public tlinkinfo_tband[] tkband;
 
         }
         public static tlinkinfo tlinkinfoInstance = new tlinkinfo();
@@ -80,9 +88,9 @@ namespace UVA
             public Byte CarID;
             public Byte ckSection;
             public Byte ckMaxNum;
-            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.Struct)]
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = ckBandNum, ArraySubType = UnmanagedType.Struct)]
             public clinkinfo_tband[] ckband;
-            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 1, ArraySubType = UnmanagedType.Struct)]
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = tinfoNum, ArraySubType = UnmanagedType.Struct)]
             public tlinkinfo[] ttlinkinfo;
 
         }
@@ -103,8 +111,10 @@ namespace UVA
                     //Console.WriteLine("s");
                     break;
                 case 38:
+                case 22:
               
                     linkInfo = (LINKINFO_RECEIVE)BytesToStuct(message, linkInfo.GetType());
+                    msgForm = (int)Global.msgFromType.linkInfo;
                     break;
                 default:
                     break;

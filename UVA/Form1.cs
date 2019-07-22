@@ -60,6 +60,12 @@ namespace UVA
         /// 无人机信息改变后，界面的回调函数
         /// </summary>
         private modifyUVA_CALLBACK modifyUVACallBack;
+        /// <summary>
+        /// 委托，更新界面的GPS信息
+        /// </summary>
+        /// <param name="GPS"></param>
+        private delegate void updateGPS_CALLBACK(string GPS);
+        private updateGPS_CALLBACK updateGPSCAllBack;
         //存储在线的全部无人机,考虑到线程安全和效率问题，使用hashTable
         /// <summary>
         /// 存放系统中保存过的无人机实体
@@ -76,13 +82,16 @@ namespace UVA
         /// <summary>
         /// 展示链路状态的类实例
         /// </summary>
-        public linkInfo linkInfoBoard = new linkInfo();
+        public linkInfo linkInfoBoard; 
+
+        Size _beforeDialogSize;
         /// <summary>
         /// 构造函数
         /// </summary>
         public Form1()
         {
             InitializeComponent();
+            _beforeDialogSize = this.Size;
             InitSys();
             //设置按钮的颜色          this.button4.ForeColor = Control.DefaultForeColor;
             this.button4.BackColor = Control.DefaultBackColor;
@@ -95,6 +104,7 @@ namespace UVA
         {
             //初始化系统
             setSysLog(Global.SystemInfo);
+            linkInfoBoard= new linkInfo();
 
             /*try
             {
@@ -128,7 +138,7 @@ namespace UVA
         public void setSysLog(String info)
         {
             String nowString= DateTime.Now.ToLocalTime().ToString();
-            textBox_sysLog.AppendText(nowString+"\r\n"+info+"\n");
+            textBox_sysLog.AppendText(nowString+"\r\n"+info+"\r\n");
         }
         /// <summary>
         /// 修改界面上，在线无人机的回调
@@ -198,28 +208,44 @@ namespace UVA
                 
             }
         }
+        private void updateGPS(string gps)
+        {
+            this.labelGPS.Text = gps;
+        }
         /// <summary>
         /// 开启UVA监听连接。在这里实例化跨线程操作，开启调度线程
         /// </summary>
         public void startListenUVAConnection()
         {
-            //获取信息接收端口
-            port = Global.CONNECTION_PORT;
-            //获取监听IP
-            ip = Global.CONNECTION_IP;
-            //创建节点
-            point = new IPEndPoint(IPAddress.Parse(ip), port);
-            //实例化调度UDP服务器
-            dispatchUDPClient = new UdpClient(point);
-            //实例化日志信息设置回调
-            setSysLogCallBack = new setSysLog_CALLBACK(setSysLog);
-            //实例化修改无人机在线信息
-            modifyUVACallBack = new modifyUVA_CALLBACK(modifyUVA);
-            //开启UDP监听
-            dispatchThread = new Thread(new ParameterizedThreadStart(dispatchLoop));
-            dispatchThread.IsBackground = true;
-            dispatchThread.Start(dispatchUDPClient);
-            //return true;
+            try
+            {
+                //获取信息接收端口
+                port = Global.CONNECTION_PORT;
+                //获取监听IP
+                ip = Global.CONNECTION_IP;
+                //创建节点
+                point = new IPEndPoint(IPAddress.Parse(ip), port);
+                //实例化调度UDP服务器
+                dispatchUDPClient = new UdpClient(point);
+                //实例化日志信息设置回调
+                setSysLogCallBack = new setSysLog_CALLBACK(setSysLog);
+                //实例化修改无人机在线信息
+                modifyUVACallBack = new modifyUVA_CALLBACK(modifyUVA);
+                //实例化GPS更新信息
+                updateGPSCAllBack = new updateGPS_CALLBACK(updateGPS);
+                //开启UDP监听
+                dispatchThread = new Thread(new ParameterizedThreadStart(dispatchLoop));
+                dispatchThread.IsBackground = true;
+                dispatchThread.Start(dispatchUDPClient);
+                //return true;
+            }
+            catch (Exception ee)
+            {
+
+                Trace.Write(ee.Message);
+                MessageBox.Show("请不要重复点击开始按钮");
+            }
+
            
 
         }
@@ -431,7 +457,19 @@ namespace UVA
                                         //tmpUVA.receiveHeartAsync(x, y, heartTime);
                                         byte[] sendBytes = Command.HeratResponse(tmpUVA);
                                         dispatch.Send(sendBytes, sendBytes.Length,RemoteIpEndPoint);
-
+#if DEBUG
+                                        Trace.WriteLine(string.Format("Terminal {8} GPS Info:\r\n{0}{1}{2}{3},{4}{5}{6}{7}\r\n",
+                                            bmanager.uvaMsg.latDeg, bmanager.uvaMsg.latMin, bmanager.uvaMsg.latSec, bmanager.uvaMsg.latDir,
+                                            bmanager.uvaMsg.lonDeg, bmanager.uvaMsg.lonMin, bmanager.uvaMsg.lonSec, bmanager.uvaMsg.lonDir,
+                                            id));
+#endif
+                                        if((allUVA[id] as UvaEntity).panelName==Global.MAIN_PANEL )
+                                        {
+                                            labelGPS.Invoke(updateGPSCAllBack, string.Format("{0}{1}{2}{3},{4}{5}{6}{7}",
+                                            bmanager.uvaMsg.latDeg, bmanager.uvaMsg.latMin, bmanager.uvaMsg.latSec, bmanager.uvaMsg.latDir,
+                                            bmanager.uvaMsg.lonDeg, bmanager.uvaMsg.lonMin, bmanager.uvaMsg.lonSec, bmanager.uvaMsg.lonDir));
+                                        }
+                                        
                                     }
                                     catch (Exception e)
                                     {
@@ -454,6 +492,10 @@ namespace UVA
                         default:
                             break;
                     }
+                }
+                else if(bmanager.msgForm==(int)Global.msgFromType.linkInfo)
+                {
+                    linkInfoBoard.setByLinkInfoMsg(bmanager);
                 }
                 
 
@@ -819,5 +861,34 @@ namespace UVA
             }
             
         }
+
+        /// <summary>
+        /// 响应式布局
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected  void sizeChanged(object sender ,EventArgs e)
+        {
+            base.OnResizeEnd(e);
+            Size endSize = this.Size;
+            float percentWidth = (float)endSize.Width / _beforeDialogSize.Width;
+            float percentHeight = (float)endSize.Height / _beforeDialogSize.Height;
+
+            foreach (Control control in this.Controls)
+            {
+                if (control is DataGridView)
+                    continue;
+                //按比例改变控件大小
+                control.Width = (int)(control.Width * percentWidth);
+                control.Height = (int)(control.Height * percentHeight);
+
+                //为了不使控件之间覆盖 位置也要按比例变化
+                control.Left = (int)(control.Left * percentWidth);
+                control.Top = (int)(control.Top * percentHeight);
+            }
+            _beforeDialogSize = endSize;
+        }
+
+
     }
 }

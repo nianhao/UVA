@@ -26,12 +26,20 @@ namespace UVA
         /// <summary>
         /// 视频接收服务器，分配的最大端口号
         /// </summary>
-        public static int MAXPORT = 60000;
+        public static int MAXPORT = 10000;
         //设置视频接收服务器的IP
         /// <summary>
         /// 视频接收服务器的IP地址
         /// </summary>
-        public static string RECEIVE_VIDEO_SERVER = "58.87.106.50";
+        public static string RECEIVE_VIDEO_SERVER = "192.168.8.101";
+        /// <summary>
+        /// VLC监听的地址
+        /// </summary>
+        public static string SERVERIP = "192.168.8.101";
+        /// <summary>
+        /// cpe地址
+        /// </summary>
+        public static string cpeIP = "10.7.26.147";
         //设置分配端口的最大重试次数
         /// <summary>
         /// 视频接收服务器，最大创建重试次数
@@ -50,7 +58,7 @@ namespace UVA
         /// <summary>
         /// 视频保存路径
         /// </summary>
-        public static String videoSavePath = "c:\\";
+        public static String videoSavePath = "e:\\";
         public static string PLUGINPATH = "";
         /// <summary>
         /// 生成文件签名
@@ -72,7 +80,7 @@ namespace UVA
         /// <summary>
         /// 接收到的消息来源
         /// </summary>
-        public  enum msgFromType {uva, helmet };
+        public  enum msgFromType {uva, helmet,linkInfo};
         /// <summary>
         /// 配置发送出去的命令对应的表示
         /// </summary>
@@ -90,9 +98,6 @@ namespace UVA
         public static char recTypeEND = '\u0003';
         public static char recTypeOK = '\u0004';
         //public static char cmdTypeCLOSE = '\u0005';
-        /// <summary>
-        /// VLC监听的地址
-        /// </summary>
-        public static string SERVERIP = "172.21.0.2";
+
     }
 }
