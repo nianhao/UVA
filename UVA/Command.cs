@@ -46,12 +46,13 @@ namespace UVA
             repMsg.IPSecond = ipSecond;
             repMsg.IPThird = ipThird;
             repMsg.IPFourth = ipFourth;
-            repMsg.Port = uvaT.videoPort;
+            //repMsg.Port = uvaT.videoPort;
+            repMsg.Port = Global.cpePort;
             repMsg.sendType = '\u0002';
             repMsg.bandWidth = uvaT.bandWidth;
 
             //把ip和端口补充上
-            string[] ips = uvaT.videoIp.Split('.');
+            /*string[] ips = uvaT.videoIp.Split('.');
             int ipFirst = Convert.ToInt32(ips[0]);
             int ipSecond = Convert.ToInt32(ips[1]);
             int ipThird = Convert.ToInt32(ips[2]);
@@ -62,7 +63,7 @@ namespace UVA
             repMsg.IPSecond = ipSecond;
             repMsg.IPThird = ipThird;
             repMsg.IPFourth = ipFourth;
-            repMsg.Port = uvaT.videoPort;
+            repMsg.Port = uvaT.videoPort;*/
             return StructToBytes(repMsg);
         }
         /// <summary>

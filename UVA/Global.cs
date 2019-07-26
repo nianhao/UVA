@@ -38,8 +38,16 @@ namespace UVA
         public static string SERVERIP = "192.168.8.101";
         /// <summary>
         /// cpe地址
+        /// 用cpe 700M链路的时候，使用DMZ（链路的技术，不用管）
+        /// 所以视频应该是发送到cpe地址
+        /// 在心跳中，返回的信息是cpe的ip
+        /// 如果接收不到视频，检查心跳里填的ip是否正确
         /// </summary>
-        public static string cpeIP = "10.7.26.147";
+        public static string cpeIP = "192.168.1.1";
+        /// <summary>
+        /// cpePort与cepIP同样的道理
+        /// </summary>
+        public static int cpePort = 6005;
         //设置分配端口的最大重试次数
         /// <summary>
         /// 视频接收服务器，最大创建重试次数

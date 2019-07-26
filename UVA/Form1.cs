@@ -418,8 +418,17 @@ namespace UVA
 
                                 }
                                 //获取无人机实例，进行销毁操作
-                                UvaEntity tmpUva = allUVA[uvaId] as UvaEntity;
-                                comboBox_allUVA.Invoke(modifyUVACallBack, tmpUva, false);
+                                try
+                                {
+                                    UvaEntity tmpUva = allUVA[uvaId] as UvaEntity;
+                                    comboBox_allUVA.Invoke(modifyUVACallBack, tmpUva, false);
+                                }
+                                catch (Exception ee)
+                                {
+
+                                    Trace.WriteLine(ee.Message);
+                                }
+                                
                                 break;
                             }
                         //收到心跳信息
@@ -720,15 +729,27 @@ namespace UVA
         private void button_close_Click(object sender, EventArgs e)
         {
             if (comboBox_allUVA.Text == "") return;
-            foreach(DictionaryEntry dtmpUVA in allUVA)
+            UvaEntity tmpUVA;
+            bool flag = false;
+            foreach (DictionaryEntry dtmpUVA in allUVA)
             {
-                UvaEntity tmpUVA = dtmpUVA.Value as UvaEntity;
+                tmpUVA = dtmpUVA.Value as UvaEntity;
                 if(comboBox_allUVA.Text==tmpUVA.uvaName)
                 {
                     tmpUVA.sendClose();
+                    try
+                    {
+                        comboBox_allUVA.Invoke(modifyUVACallBack, tmpUVA, false);
+                    }
+                    catch (Exception ee)
+                    {
+
+                        Trace.WriteLine(ee.Message);
+                    }
                     break;
                 }
             }
+
         }
         /// <summary>
         /// 开始监听
