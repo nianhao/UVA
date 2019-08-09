@@ -199,7 +199,9 @@
   <ItemGroup>
     <Content Include="Resources\car.png" />
     <Content Include="Resources\server.png" />
+    <None Include="Resources\timg.jpg" />
     <Content Include="Resources\uva.png" />
+    <None Include="Resources\无信号.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

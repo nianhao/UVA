@@ -28,7 +28,7 @@ namespace UVA
             string plugin_arg = "--plugin-path=" + pluginPath;
             //string[] arguments = {"demux=h264","--extraintf=http:logger"," --verbose=2", "--file-logging", "--logfile=vlc-log.txt", "-I", "dummy", "--ignore-config", "--no-video-title", plugin_arg };
             //string[] arguments = { "--demux=h264", " --verbose=2", "--file-logging", "--logfile=vlc-log.txt", "--ignore-config", "--no-video-title", plugin_arg };
-            string[] arguments = { "--sout=#duplicate{dst=display,dst=std{access=file,mux=ts,dst="+saveVideoPath+"}}", "--sout-all", "--sout-keep", "--demux=h264", " --verbose=2", "--file-logging", "--logfile=vlc-log.txt", "--ignore-config", plugin_arg };
+            string[] arguments = { "--sout=#duplicate{dst=display,dst=std{access=file,mux=ts,dst="+saveVideoPath+"}}", "--sout-all", "--sout-keep", "--demux=h264", " --verbose=2", "--file-logging", "--logfile=vlc-log.txt", "--ignore-config", "--network-caching=1000", plugin_arg };
 
             libvlc_instance_ = LibVlcAPI.libvlc_new(arguments);
 

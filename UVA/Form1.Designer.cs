@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.textBox_sysLog = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -39,15 +40,8 @@
             this.label_uvaNum = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.serviceController1 = new System.ServiceProcess.ServiceController();
-            this.panel_VLCPlayer = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.panel5 = new System.Windows.Forms.Panel();
             this.button_close = new System.Windows.Forms.Button();
             this.button_start = new System.Windows.Forms.Button();
             this.button_stop = new System.Windows.Forms.Button();
@@ -58,6 +52,13 @@
             this.button5 = new System.Windows.Forms.Button();
             this.buttonshowLinkInfo = new System.Windows.Forms.Button();
             this.labelGPS = new System.Windows.Forms.Label();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel_VLCPlayer = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -147,14 +148,6 @@
             this.label3.TabIndex = 5;
             this.label3.Text = "台";
             // 
-            // panel_VLCPlayer
-            // 
-            this.panel_VLCPlayer.BackColor = System.Drawing.Color.Gray;
-            this.panel_VLCPlayer.Location = new System.Drawing.Point(34, 29);
-            this.panel_VLCPlayer.Name = "panel_VLCPlayer";
-            this.panel_VLCPlayer.Size = new System.Drawing.Size(701, 504);
-            this.panel_VLCPlayer.TabIndex = 6;
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -174,60 +167,6 @@
             this.label4.Size = new System.Drawing.Size(39, 19);
             this.label4.TabIndex = 15;
             this.label4.Text = "**M";
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.Red;
-            this.panel1.Location = new System.Drawing.Point(761, 29);
-            this.panel1.Margin = new System.Windows.Forms.Padding(35, 20, 20, 20);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(216, 147);
-            this.panel1.TabIndex = 20;
-            // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.Color.Orange;
-            this.panel2.Location = new System.Drawing.Point(761, 203);
-            this.panel2.Margin = new System.Windows.Forms.Padding(0, 20, 0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(216, 147);
-            this.panel2.TabIndex = 21;
-            // 
-            // panel3
-            // 
-            this.panel3.BackColor = System.Drawing.Color.Yellow;
-            this.panel3.Location = new System.Drawing.Point(761, 386);
-            this.panel3.Margin = new System.Windows.Forms.Padding(0, 20, 0, 0);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(216, 147);
-            this.panel3.TabIndex = 22;
-            // 
-            // panel6
-            // 
-            this.panel6.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.panel6.Location = new System.Drawing.Point(999, 386);
-            this.panel6.Margin = new System.Windows.Forms.Padding(0, 20, 0, 0);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(216, 147);
-            this.panel6.TabIndex = 25;
-            // 
-            // panel4
-            // 
-            this.panel4.BackColor = System.Drawing.Color.Green;
-            this.panel4.Location = new System.Drawing.Point(999, 29);
-            this.panel4.Margin = new System.Windows.Forms.Padding(35, 20, 20, 20);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(216, 147);
-            this.panel4.TabIndex = 23;
-            // 
-            // panel5
-            // 
-            this.panel5.BackColor = System.Drawing.Color.Blue;
-            this.panel5.Location = new System.Drawing.Point(999, 203);
-            this.panel5.Margin = new System.Windows.Forms.Padding(0, 20, 0, 0);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(216, 147);
-            this.panel5.TabIndex = 24;
             // 
             // button_close
             // 
@@ -327,6 +266,89 @@
             this.labelGPS.Size = new System.Drawing.Size(47, 12);
             this.labelGPS.TabIndex = 0;
             this.labelGPS.Text = "GPS信息";
+            // 
+            // panel6
+            // 
+            this.panel6.BackColor = System.Drawing.SystemColors.Control;
+            this.panel6.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel6.BackgroundImage")));
+            this.panel6.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel6.Location = new System.Drawing.Point(999, 386);
+            this.panel6.Margin = new System.Windows.Forms.Padding(0, 20, 0, 0);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(216, 147);
+            this.panel6.TabIndex = 25;
+            // 
+            // panel3
+            // 
+            this.panel3.BackColor = System.Drawing.SystemColors.Control;
+            this.panel3.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel3.BackgroundImage")));
+            this.panel3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel3.Location = new System.Drawing.Point(761, 386);
+            this.panel3.Margin = new System.Windows.Forms.Padding(0, 20, 0, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(216, 147);
+            this.panel3.TabIndex = 22;
+            // 
+            // panel4
+            // 
+            this.panel4.BackColor = System.Drawing.SystemColors.Control;
+            this.panel4.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel4.BackgroundImage")));
+            this.panel4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel4.Location = new System.Drawing.Point(999, 29);
+            this.panel4.Margin = new System.Windows.Forms.Padding(35, 20, 20, 20);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(216, 147);
+            this.panel4.TabIndex = 23;
+            // 
+            // panel5
+            // 
+            this.panel5.BackColor = System.Drawing.SystemColors.Control;
+            this.panel5.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel5.BackgroundImage")));
+            this.panel5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel5.Location = new System.Drawing.Point(999, 203);
+            this.panel5.Margin = new System.Windows.Forms.Padding(0, 20, 0, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(216, 147);
+            this.panel5.TabIndex = 24;
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.panel1.BackgroundImage = global::UVA.Properties.Resources.timg;
+            this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel1.Location = new System.Drawing.Point(761, 29);
+            this.panel1.Margin = new System.Windows.Forms.Padding(35, 20, 20, 20);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(216, 147);
+            this.panel1.TabIndex = 20;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.SystemColors.Control;
+            this.panel2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel2.BackgroundImage")));
+            this.panel2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel2.Location = new System.Drawing.Point(761, 203);
+            this.panel2.Margin = new System.Windows.Forms.Padding(0, 20, 0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(216, 147);
+            this.panel2.TabIndex = 21;
+            // 
+            // panel_VLCPlayer
+            // 
+            this.panel_VLCPlayer.BackColor = System.Drawing.SystemColors.Control;
+            this.panel_VLCPlayer.BackgroundImage = global::UVA.Properties.Resources.timg;
+            this.panel_VLCPlayer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel_VLCPlayer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel_VLCPlayer.Location = new System.Drawing.Point(34, 29);
+            this.panel_VLCPlayer.Name = "panel_VLCPlayer";
+            this.panel_VLCPlayer.Size = new System.Drawing.Size(701, 504);
+            this.panel_VLCPlayer.TabIndex = 6;
             // 
             // Form1
             // 

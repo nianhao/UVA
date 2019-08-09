@@ -140,6 +140,12 @@ namespace UVA
             String nowString= DateTime.Now.ToLocalTime().ToString();
             textBox_sysLog.AppendText(nowString+"\r\n"+info+"\r\n");
         }
+        public void setSysLog(byte[] info)
+        {
+            String nowString = DateTime.Now.ToLocalTime().ToString();
+            textBox_sysLog.AppendText("\r\n"+nowString +" 总长度为" + info.Length + "\r\n");
+            textBox_sysLog.AppendText(info[0].ToString("X2")+" "+info[1].ToString("X2") + " "+info[2].ToString("X2") + " "+info[3].ToString("X2") + " " + "\r\n");
+        }
         /// <summary>
         /// 修改界面上，在线无人机的回调
         /// </summary>
@@ -280,13 +286,15 @@ namespace UVA
                 {
 
                     Trace.WriteLine(e.ToString());
+                    Trace.WriteLine(e.Message);
                     continue;
                 }
 
                 //输出debug信息
                 //Trace.WriteLine("接收到消息："+receiveData);
-#if DEBUG 
-                textBox_sysLog.Invoke(setSysLogCallBack,("接收到来自"+RemoteIpEndPoint.ToString()+"消息：" + receiveData));
+#if DEBUG
+                textBox_sysLog.Invoke(setSysLogCallBack,("接收到来自"+RemoteIpEndPoint.ToString()+"消息：" +receiveBytes));
+                //textBox_sysLog.Invoke(setSysLogCallBack, (receiveBytes));
 #endif
                 string[] commands = receiveData.Split(';');
                 if(bmanager.msgForm==(int)Global.msgFromType.uva|| bmanager.msgForm == (int)Global.msgFromType.helmet)
@@ -465,14 +473,20 @@ namespace UVA
                                         UvaEntity tmpUVA = allUVA[id] as UvaEntity;
                                         //tmpUVA.receiveHeartAsync(x, y, heartTime);
                                         byte[] sendBytes = Command.HeratResponse(tmpUVA);
+                                        string gpsString = string.Format("{0}{1}{2}{3},{4}{5}{6}{7}",
+                                            bmanager.uvaMsg.latDeg, bmanager.uvaMsg.latMin, bmanager.uvaMsg.latSec, bmanager.uvaMsg.latDir,
+                                            bmanager.uvaMsg.lonDeg, bmanager.uvaMsg.lonMin, bmanager.uvaMsg.lonSec, bmanager.uvaMsg.lonDir);
                                         dispatch.Send(sendBytes, sendBytes.Length,RemoteIpEndPoint);
 #if DEBUG
                                         Trace.WriteLine(string.Format("Terminal {8} GPS Info:\r\n{0}{1}{2}{3},{4}{5}{6}{7}\r\n",
                                             bmanager.uvaMsg.latDeg, bmanager.uvaMsg.latMin, bmanager.uvaMsg.latSec, bmanager.uvaMsg.latDir,
                                             bmanager.uvaMsg.lonDeg, bmanager.uvaMsg.lonMin, bmanager.uvaMsg.lonSec, bmanager.uvaMsg.lonDir,
                                             id));
+                                        textBox_sysLog.Invoke(setSysLogCallBack, string.Format("解析到心跳命令\r\n" +
+                                            "终端 {0} GPS:{1}\r\n" +
+                                            "时间 {2}",id,gpsString,heartTime));
 #endif
-                                        if((allUVA[id] as UvaEntity).panelName==Global.MAIN_PANEL )
+                                        if ((allUVA[id] as UvaEntity).panelName==Global.MAIN_PANEL )
                                         {
                                             labelGPS.Invoke(updateGPSCAllBack, string.Format("{0}{1}{2}{3},{4}{5}{6}{7}",
                                             bmanager.uvaMsg.latDeg, bmanager.uvaMsg.latMin, bmanager.uvaMsg.latSec, bmanager.uvaMsg.latDir,
@@ -485,6 +499,9 @@ namespace UVA
                                         Trace.WriteLine("info解析失败");
                                         Trace.WriteLine(e.StackTrace);
                                         Trace.WriteLine(e.Message);
+#if DEBUG
+                                        textBox_sysLog.Invoke(setSysLogCallBack, e.Message);
+#endif
                                         //throw;
                                     }
 
@@ -760,9 +777,54 @@ namespace UVA
         {
             startListenUVAConnection();
         }
-
+        /// <summary>
+        /// 关闭监听
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_stop_Click(object sender, EventArgs e)
         {
+            //首先下线全部无人机
+            if (comboBox_allUVA.Text != "")
+            {
+                Trace.WriteLine("首先断开全部无人机连接，并且保存视频");
+                UvaEntity tmpUVA;
+                bool flag = false;
+                foreach (DictionaryEntry dtmpUVA in allUVA)
+                {
+                    tmpUVA = dtmpUVA.Value as UvaEntity;
+                    tmpUVA.sendClose();
+                    try
+                    {
+                        comboBox_allUVA.Invoke(modifyUVACallBack, tmpUVA, false);
+                    }
+                    catch (Exception ee)
+                    {
+
+                        Trace.WriteLine(ee.Message);
+                    }
+
+                }
+            }
+            //关闭监听线程
+            try
+            {
+                if(dispatchThread.IsAlive)
+                {
+                    dispatchUDPClient.Close();
+                    dispatchThread.Abort();
+                    textBox_sysLog.Invoke(setSysLogCallBack, ("已关闭程序！"));
+                }
+                
+            }
+            catch (Exception ee)
+            {
+
+                //throw;
+                Trace.WriteLine(ee.Message);
+            }
+            
+
 
         }
         private void clearButtonColor()
@@ -900,8 +962,12 @@ namespace UVA
                 if (control is DataGridView)
                     continue;
                 //按比例改变控件大小
-                control.Width = (int)(control.Width * percentWidth);
-                control.Height = (int)(control.Height * percentHeight);
+                if (!(control is Button))
+                {
+                    control.Width = (int)(control.Width * percentWidth);
+                    control.Height = (int)(control.Height * percentHeight);
+                }
+                
 
                 //为了不使控件之间覆盖 位置也要按比例变化
                 control.Left = (int)(control.Left * percentWidth);
